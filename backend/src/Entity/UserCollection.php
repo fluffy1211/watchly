@@ -25,7 +25,7 @@ class UserCollection
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Film $film = null;
 
-    #[ORM\Column(length: 10)]
+    #[ORM\Column(columnDefinition: "ENUM('WATCHLIST', 'WATCHED') NOT NULL")]
     private string $status = self::STATUS_WATCHLIST;
 
     #[ORM\Column]
