@@ -16,6 +16,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AuthController extends AbstractController
 {
+    /**
+     * Handled by LexikJWT firewall — this method is never called directly.
+     */
+    #[Route('/api/login', name: 'api_login', methods: ['POST'])]
+    public function login(): JsonResponse
+    {
+        throw new \LogicException('Firewall should have intercepted this request.');
+    }
+
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
     public function register(
         Request $request,
