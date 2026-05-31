@@ -1,0 +1,28 @@
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star {
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  transition: color var(--transition), transform var(--transition);
+}
+
+.star:not(:disabled) {
+  cursor: pointer;
+}
+
+.star:not(:disabled):hover {
+  transform: scale(1.15);
+}
+
+.filled {
+  color: var(--color-accent);
+}
+
+.empty {
+  color: var(--color-border);
+}
