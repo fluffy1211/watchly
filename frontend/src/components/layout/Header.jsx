@@ -35,10 +35,10 @@ export default function Header() {
           </div>
         ) : (
           <div className={styles.right}>
-            <Link to="/auth">
-              <Button variant="ghost" size="sm">Connexion</Button>
+            <Link to="/auth?tab=login">
+              <Button variant="secondary" size="sm">Connexion</Button>
             </Link>
-            <Link to="/auth">
+            <Link to="/auth?tab=register">
               <Button variant="primary" size="sm">S'inscrire</Button>
             </Link>
           </div>
