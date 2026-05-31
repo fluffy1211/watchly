@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\UserCollection;
+use App\Repository\FilmRepository;
 use App\Repository\UserCollectionRepository;
 use App\Service\CollectionService;
 use App\Service\FilmService;
@@ -22,6 +23,7 @@ class CollectionController extends AbstractController
         Request $request,
         TMDBService $tmdb,
         FilmService $filmService,
+        FilmRepository $filmRepo,
         UserCollectionRepository $repo,
         EntityManagerInterface $em,
         Security $security,
@@ -34,6 +36,11 @@ class CollectionController extends AbstractController
 
         $user = $security->getUser();
         $tmdbId = $data['tmdb_id'];
+
+        $existingFilm = $filmRepo->findOneBy(['tmdbId' => $tmdbId]);
+        if ($existingFilm !== null && $repo->findOneBy(['user' => $user, 'film' => $existingFilm]) !== null) {
+            return $this->json(['message' => 'Film already in collection'], Response::HTTP_CONFLICT);
+        }
 
         $tmdbData = $tmdb->getMovieById($tmdbId);
         if (empty($tmdbData)) {

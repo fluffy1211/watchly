@@ -39,7 +39,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     SUM(CASE WHEN uc.status = :watched   THEN 1 ELSE 0 END)  AS watched,
                     SUM(CASE WHEN uc.isFavorite = true   THEN 1 ELSE 0 END)  AS favorites
              FROM App\Entity\User u
-             LEFT JOIN App\Entity\UserCollection uc WITH uc.user = u
+             LEFT JOIN App\Entity\UserCollection uc ON uc.user = u
              GROUP BY u.id'
         )
         ->setParameter('watched', 'WATCHED')
