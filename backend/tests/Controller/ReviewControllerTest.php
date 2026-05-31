@@ -45,7 +45,7 @@ class ReviewControllerTest extends BaseWebTestCase
 
     private function mockTmdb(): void
     {
-        $mock = $this->createMock(TMDBService::class);
+        $mock = $this->createStub(TMDBService::class);
         $mock->method('getMovieById')->willReturn(self::$fakeTmdbMovie);
         static::getContainer()->set(TMDBService::class, $mock);
     }

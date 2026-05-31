@@ -58,7 +58,7 @@ jobs:
       - name: Run migrations
         working-directory: ./backend
         env:
-          DATABASE_URL: mysql://watchly:watchly@127.0.0.1:3306/watchly
+          DATABASE_URL: mysql://watchly:watchly@127.0.0.1:3306/watchly?serverVersion=8.4.0&charset=utf8mb4
           APP_ENV: test
           JWT_SECRET_KEY: config/jwt/private.pem
           JWT_PUBLIC_KEY: config/jwt/public.pem
@@ -69,7 +69,7 @@ jobs:
       - name: Run PHPUnit tests
         working-directory: ./backend
         env:
-          DATABASE_URL: mysql://watchly:watchly@127.0.0.1:3306/watchly
+          DATABASE_URL: mysql://watchly:watchly@127.0.0.1:3306/watchly?serverVersion=8.4.0&charset=utf8mb4
           APP_ENV: test
           JWT_SECRET_KEY: config/jwt/private.pem
           JWT_PUBLIC_KEY: config/jwt/public.pem
