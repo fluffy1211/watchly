@@ -80,18 +80,21 @@ review (id, user_id FK, film_id FK, content TEXT, created_at, updated_at)
 
 ### Commits
 - Commits fréquents et atomiques : un commit = une chose précise
+- Pour toute tâche multi-étapes, committer après chaque sous-tâche complète (ex : entité créée → commit, service ajouté → commit, tests écrits → commit). Ne pas tout regrouper en un seul commit en fin de tâche.
 - Format Conventional Commits : type(scope): description courte
+- Les messages de commit décrivent l'INTENTION (le pourquoi / ce que ça apporte), pas l'implémentation technique. Pas de noms de classes, méthodes ou fichiers dans le message.
   Exemples :
-    feat(auth): add JWT login endpoint
-    feat(entity): create UserCollection entity with status enum
-    fix(collection): enforce is_favorite only if status WATCHED
-    chore(docker): add docker-compose with 3 services
-    test(collection): add unit tests for CollectionService
+    feat(auth): allow users to register and log in with a JWT token
+    feat(collection): track which films a user has watched or wants to watch
+    fix(collection): prevent marking a film as favorite before watching it
+    chore(docker): spin up app, database and frontend with a single command
+    test(collection): ensure business rules are enforced on collection changes
 - Ne jamais committer .env (vérifié dans .gitignore)
 
 ### Branches
-- Toujours travailler sur une branche feature/* ou fix/*
-- Merger sur develop une fois la feature terminée et testée
+- TOUJOURS créer une branche dédiée avant de commencer tout travail, même mineur : feature/* pour les nouvelles fonctionnalités, fix/* pour les corrections.
+- Ne jamais committer directement sur develop ou main.
+- Merger sur develop une fois la feature terminée et testée.
 - main = uniquement les tags de jalon (v0.5 pour J5, v1.0 pour J6)
 
 ### GitHub CLI (gh)
