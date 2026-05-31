@@ -2,21 +2,10 @@
 
 namespace App\Tests\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\BaseWebTestCase;
 
-class AuthControllerTest extends WebTestCase
+class AuthControllerTest extends BaseWebTestCase
 {
-    private $client;
-    private EntityManagerInterface $em;
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-        $this->em = static::getContainer()->get(EntityManagerInterface::class);
-        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
-    }
-
     private function register(string $email, string $password, string $username): void
     {
         $this->client->request(

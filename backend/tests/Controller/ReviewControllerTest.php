@@ -3,18 +3,13 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
-use App\Entity\UserCollection;
 use App\Service\TMDBService;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Tests\BaseWebTestCase;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ReviewControllerTest extends WebTestCase
+class ReviewControllerTest extends BaseWebTestCase
 {
-    private $client;
-    private EntityManagerInterface $em;
-
     private static array $fakeTmdbMovie = [
         'id'             => 27205,
         'title'          => 'Inception',
@@ -28,16 +23,6 @@ class ReviewControllerTest extends WebTestCase
         'genres'         => [['id' => 28, 'name' => 'Action']],
         'credits'        => ['cast' => []],
     ];
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-        $this->em = static::getContainer()->get(EntityManagerInterface::class);
-        $this->em->createQuery('DELETE FROM App\Entity\Review r')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\UserCollection uc')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\Film f')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
-    }
 
     private function createUserWithToken(string $email, string $username): array
     {
@@ -65,22 +50,18 @@ class ReviewControllerTest extends WebTestCase
         static::getContainer()->set(TMDBService::class, $mock);
     }
 
-    /** Adds the film, returns the local film id and collection id. */
     private function setupWatchedFilm(string $token): array
     {
         $this->mockTmdb();
 
         $this->client->request('POST', '/api/collection/add', [], [], $this->authHeaders($token),
             json_encode(['tmdb_id' => 27205]));
-        $added = json_decode($this->client->getResponse()->getContent(), true);
+        $added        = json_decode($this->client->getResponse()->getContent(), true);
         $collectionId = $added['collection']['id'];
 
-        // fetch local film id from collection list
         $this->client->request('GET', '/api/collection', [], [], $this->authHeaders($token));
-        $collection = json_decode($this->client->getResponse()->getContent(), true);
-        $filmId = $collection[0]['film']['id'];
+        $filmId = json_decode($this->client->getResponse()->getContent(), true)[0]['film']['id'];
 
-        // set to WATCHED
         $this->client->request('PATCH', "/api/collection/{$collectionId}/status", [], [], $this->authHeaders($token),
             json_encode(['status' => 'WATCHED']));
 
@@ -96,7 +77,6 @@ class ReviewControllerTest extends WebTestCase
 
         $this->client->request('POST', '/api/collection/add', [], [], $this->authHeaders($token),
             json_encode(['tmdb_id' => 27205]));
-        $added = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->client->request('GET', '/api/collection', [], [], $this->authHeaders($token));
         $filmId = json_decode($this->client->getResponse()->getContent(), true)[0]['film']['id'];
@@ -173,7 +153,6 @@ class ReviewControllerTest extends WebTestCase
         $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
             json_encode(['content' => 'Public reviews should be accessible to all.']));
 
-        // No Authorization header
         $this->client->request('GET', "/api/films/{$filmId}/reviews");
 
         $this->assertResponseStatusCodeSame(200);
@@ -204,7 +183,6 @@ class ReviewControllerTest extends WebTestCase
         $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token1),
             json_encode(['content' => 'User one wrote this review for the film.']));
 
-        // user2 tries to delete user1's review
         $this->client->request('DELETE', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token2));
 
         $this->assertResponseStatusCodeSame(404);
