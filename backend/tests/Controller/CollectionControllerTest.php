@@ -98,7 +98,7 @@ class CollectionControllerTest extends WebTestCase
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
         $this->addFilmToCollection($token);
 
-        $this->mockTmdb(['getMovieById' => self::$fakeTmdbMovie]);
+        // Mock already set by addFilmToCollection — cannot re-set after service is initialized
         $this->client->request('POST', '/api/collection/add', [], [], $this->authHeaders($token),
             json_encode(['tmdb_id' => 27205]));
 
