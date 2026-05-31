@@ -28,7 +28,7 @@ class FilmControllerTest extends BaseWebTestCase
 
     private function mockTmdb(array $returnMap): void
     {
-        $mock = $this->createMock(TMDBService::class);
+        $mock = $this->createStub(TMDBService::class);
         foreach ($returnMap as $method => $return) {
             $mock->method($method)->willReturn($return);
         }

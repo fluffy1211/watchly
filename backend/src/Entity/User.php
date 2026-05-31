@@ -75,6 +75,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getPassword(): ?string { return $this->password; }
     public function setPassword(string $password): static { $this->password = $password; return $this; }
 
+    #[\Deprecated]
     public function eraseCredentials(): void {}
 
     public function getUsername(): ?string { return $this->username; }
