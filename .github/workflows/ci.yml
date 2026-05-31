@@ -55,23 +55,21 @@ jobs:
             -out config/jwt/public.pem -pubout \
             -passin pass:watchly_jwt_passphrase
 
-      - name: Create test database schema
+      - name: Run migrations
         working-directory: ./backend
         env:
-          DATABASE_URL: mysql://watchly:watchly@127.0.0.1:3306/watchly_test
+          DATABASE_URL: mysql://watchly:watchly@127.0.0.1:3306/watchly
           APP_ENV: test
           JWT_SECRET_KEY: config/jwt/private.pem
           JWT_PUBLIC_KEY: config/jwt/public.pem
           JWT_PASSPHRASE: watchly_jwt_passphrase
           TMDB_API_KEY: fake_key_for_tests
-        run: |
-          php bin/console doctrine:database:create --env=test --if-not-exists
-          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+        run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
 
       - name: Run PHPUnit tests
         working-directory: ./backend
         env:
-          DATABASE_URL: mysql://watchly:watchly@127.0.0.1:3306/watchly_test
+          DATABASE_URL: mysql://watchly:watchly@127.0.0.1:3306/watchly
           APP_ENV: test
           JWT_SECRET_KEY: config/jwt/private.pem
           JWT_PUBLIC_KEY: config/jwt/public.pem
