@@ -4,16 +4,12 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use App\Service\TMDBService;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Tests\BaseWebTestCase;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class CollectionControllerTest extends WebTestCase
+class CollectionControllerTest extends BaseWebTestCase
 {
-    private $client;
-    private EntityManagerInterface $em;
-
     private static array $fakeTmdbMovie = [
         'id'             => 27205,
         'title'          => 'Inception',
@@ -28,31 +24,18 @@ class CollectionControllerTest extends WebTestCase
         'credits'        => ['cast' => []],
     ];
 
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-        $this->em = static::getContainer()->get(EntityManagerInterface::class);
-        $this->em->createQuery('DELETE FROM App\Entity\UserCollection uc')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\Film f')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
-    }
-
     private function createUserWithToken(string $email, string $username): array
     {
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
-
-        $user = new User();
-        $user->setEmail($email);
-        $user->setUsername($username);
-        $user->setRoles(['ROLE_USER']);
+        $user   = new User();
+        $user->setEmail($email)->setUsername($username)->setRoles(['ROLE_USER']);
         $user->setPassword($hasher->hashPassword($user, 'password123'));
-
         $this->em->persist($user);
         $this->em->flush();
 
-        $jwtManager = static::getContainer()->get(JWTTokenManagerInterface::class);
+        $token = static::getContainer()->get(JWTTokenManagerInterface::class)->create($user);
 
-        return ['user' => $user, 'token' => $jwtManager->create($user)];
+        return ['user' => $user, 'token' => $token];
     }
 
     private function mockTmdb(array $returnMap): void
@@ -139,7 +122,7 @@ class CollectionControllerTest extends WebTestCase
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
         $added = $this->addFilmToCollection($token);
-        $id = $added['collection']['id'];
+        $id    = $added['collection']['id'];
 
         $this->client->request('PATCH', "/api/collection/{$id}/status", [], [], $this->authHeaders($token),
             json_encode(['status' => 'WATCHED']));
@@ -154,7 +137,7 @@ class CollectionControllerTest extends WebTestCase
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
         $added = $this->addFilmToCollection($token);
-        $id = $added['collection']['id'];
+        $id    = $added['collection']['id'];
 
         $this->client->request('PATCH', "/api/collection/{$id}/favorite", [], [], $this->authHeaders($token),
             json_encode(['is_favorite' => true]));
@@ -166,7 +149,7 @@ class CollectionControllerTest extends WebTestCase
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
         $added = $this->addFilmToCollection($token);
-        $id = $added['collection']['id'];
+        $id    = $added['collection']['id'];
 
         $this->client->request('PATCH', "/api/collection/{$id}/status", [], [], $this->authHeaders($token),
             json_encode(['status' => 'WATCHED']));
@@ -183,7 +166,7 @@ class CollectionControllerTest extends WebTestCase
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
         $added = $this->addFilmToCollection($token);
-        $id = $added['collection']['id'];
+        $id    = $added['collection']['id'];
 
         $this->client->request('PATCH', "/api/collection/{$id}/rating", [], [], $this->authHeaders($token),
             json_encode(['rating' => 4]));
@@ -195,7 +178,7 @@ class CollectionControllerTest extends WebTestCase
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
         $added = $this->addFilmToCollection($token);
-        $id = $added['collection']['id'];
+        $id    = $added['collection']['id'];
 
         $this->client->request('PATCH', "/api/collection/{$id}/status", [], [], $this->authHeaders($token),
             json_encode(['status' => 'WATCHED']));
@@ -212,7 +195,7 @@ class CollectionControllerTest extends WebTestCase
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
         $added = $this->addFilmToCollection($token);
-        $id = $added['collection']['id'];
+        $id    = $added['collection']['id'];
 
         $this->client->request('DELETE', "/api/collection/{$id}", [], [], $this->authHeaders($token));
 
@@ -225,7 +208,7 @@ class CollectionControllerTest extends WebTestCase
         ['token' => $token2] = $this->createUserWithToken('user2@test.com', 'user2');
 
         $added = $this->addFilmToCollection($token1);
-        $id = $added['collection']['id'];
+        $id    = $added['collection']['id'];
 
         $this->client->request('PATCH', "/api/collection/{$id}/status", [], [], $this->authHeaders($token2),
             json_encode(['status' => 'WATCHED']));

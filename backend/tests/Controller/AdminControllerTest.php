@@ -2,27 +2,15 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Film;
 use App\Entity\User;
 use App\Entity\UserCollection;
-use App\Service\TMDBService;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Tests\BaseWebTestCase;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class AdminControllerTest extends WebTestCase
+class AdminControllerTest extends BaseWebTestCase
 {
-    private $client;
-    private EntityManagerInterface $em;
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-        $this->em     = static::getContainer()->get(EntityManagerInterface::class);
-        $this->em->createQuery('DELETE FROM App\Entity\UserCollection uc')->execute();
-        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
-    }
-
     private function createUser(string $email, string $username, array $roles = ['ROLE_USER']): User
     {
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
@@ -143,9 +131,8 @@ class AdminControllerTest extends WebTestCase
         $target = $this->createUser('user@test.com', 'regularuser');
         $admin  = $this->createUser('admin@test.com', 'adminuser', ['ROLE_USER', 'ROLE_ADMIN']);
 
-        // Create a film and a collection entry for target user directly via EM
-        $film = new \App\Entity\Film();
-        $film->setTmdbId(99999)->setTitle('Test Film');
+        $film = new Film();
+        $film->setTmdbId(rand(900000, 999999))->setTitle('Test Film');
         $this->em->persist($film);
 
         $uc = new UserCollection();
