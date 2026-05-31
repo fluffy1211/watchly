@@ -31,6 +31,7 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: '^/api/films/\d+/reviews$', roles: PUBLIC_ACCESS }
         - { path: ^/api/admin, roles: ROLE_ADMIN }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
