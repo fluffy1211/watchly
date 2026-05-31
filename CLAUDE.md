@@ -92,8 +92,9 @@ review (id, user_id FK, film_id FK, content TEXT, created_at, updated_at)
 - Ne jamais committer .env (vérifié dans .gitignore)
 
 ### Branches
-- Toujours travailler sur une branche feature/* ou fix/*
-- Merger sur develop une fois la feature terminée et testée
+- TOUJOURS créer une branche dédiée avant de commencer tout travail, même mineur : feature/* pour les nouvelles fonctionnalités, fix/* pour les corrections.
+- Ne jamais committer directement sur develop ou main.
+- Merger sur develop une fois la feature terminée et testée.
 - main = uniquement les tags de jalon (v0.5 pour J5, v1.0 pour J6)
 
 ### GitHub CLI (gh)
