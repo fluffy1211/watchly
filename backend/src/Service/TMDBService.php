@@ -23,7 +23,7 @@ class TMDBService
 
     public function getMovieById(int $tmdbId): array
     {
-        return $this->get(sprintf('/movie/%d', $tmdbId));
+        return $this->get(sprintf('/movie/%d', $tmdbId), ['append_to_response' => 'credits']);
     }
 
     public function getPopular(): array
