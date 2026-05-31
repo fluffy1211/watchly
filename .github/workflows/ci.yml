@@ -36,6 +36,10 @@ jobs:
           extensions: pdo_mysql, intl, zip
           coverage: none
 
+      - name: Create .env for CI
+        working-directory: ./backend
+        run: cp .env.example .env
+
       - name: Install dependencies
         working-directory: ./backend
         run: composer install --no-progress --no-interaction
