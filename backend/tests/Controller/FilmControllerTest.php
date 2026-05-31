@@ -2,9 +2,12 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\User;
 use App\Service\TMDBService;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class FilmControllerTest extends WebTestCase
 {
@@ -20,27 +23,21 @@ class FilmControllerTest extends WebTestCase
 
     private function getAuthToken(): string
     {
-        $this->client->request(
-            'POST',
-            '/api/register',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['email' => 'film@example.com', 'password' => 'password123', 'username' => 'filmuser'])
-        );
+        $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
 
-        $this->client->request(
-            'POST',
-            '/api/login',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['email' => 'film@example.com', 'password' => 'password123'])
-        );
+        $user = new User();
+        $user->setEmail('film@example.com');
+        $user->setUsername('filmuser');
+        $user->setRoles(['ROLE_USER']);
+        $user->setPassword($hasher->hashPassword($user, 'password123'));
 
-        $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->em->persist($user);
+        $this->em->flush();
 
-        return $data['token'];
+        /** @var JWTTokenManagerInterface $jwtManager */
+        $jwtManager = static::getContainer()->get(JWTTokenManagerInterface::class);
+
+        return $jwtManager->create($user);
     }
 
     private function mockTmdb(array $returnMap): void
