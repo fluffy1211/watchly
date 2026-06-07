@@ -29,6 +29,7 @@ export default function Auth() {
   // Shared state
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
 
   useEffect(() => {
     if (token) navigate('/search', { replace: true })
@@ -54,9 +55,10 @@ export default function Auth() {
   const handleRegister = async (e) => {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
 
     if (regPassword !== regConfirm) {
-      setError('Les mots de passe ne correspondent pas')
+      setFieldErrors({ password_confirmation: 'Les mots de passe ne correspondent pas' })
       return
     }
 
@@ -66,8 +68,17 @@ export default function Auth() {
       await login(regEmail, regPassword)
       navigate('/search', { replace: true })
     } catch (err) {
-      const msg = err.response?.data?.message || err.response?.data?.error || 'Erreur lors de l\'inscription'
-      setError(msg)
+      const data = err.response?.data
+      if (data?.errors && typeof data.errors === 'object') {
+        const mapped = {}
+        for (const [key, val] of Object.entries(data.errors)) {
+          mapped[key] = Array.isArray(val) ? val[0] : val
+        }
+        setFieldErrors(mapped)
+        setError(data.message || Object.values(mapped).join('. '))
+      } else {
+        setError(data?.message || data?.error || 'Erreur lors de l\'inscription')
+      }
     } finally {
       setLoading(false)
     }
@@ -83,14 +94,14 @@ export default function Auth() {
         <div className={styles.tabs}>
           <button
             className={`${styles.tab} ${activeTab === 'login' ? styles.tabActive : ''}`}
-            onClick={() => { setActiveTab('login'); setError('') }}
+            onClick={() => { setActiveTab('login'); setError(''); setFieldErrors({}) }}
             type="button"
           >
             Connexion
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'register' ? styles.tabActive : ''}`}
-            onClick={() => { setActiveTab('register'); setError('') }}
+            onClick={() => { setActiveTab('register'); setError(''); setFieldErrors({}) }}
             type="button"
           >
             Inscription
@@ -160,26 +171,28 @@ export default function Auth() {
               <label className={styles.label} htmlFor="reg-username">Pseudo</label>
               <input
                 id="reg-username"
-                className={styles.input}
+                className={`${styles.input} ${fieldErrors.username ? styles.inputError : ''}`}
                 type="text"
                 placeholder="cinephile42"
                 value={regUsername}
                 onChange={(e) => setRegUsername(e.target.value)}
                 required
               />
+              {fieldErrors.username && <span className={styles.fieldError}>{fieldErrors.username}</span>}
             </div>
 
             <div className={styles.formGroup}>
               <label className={styles.label} htmlFor="reg-email">Adresse email</label>
               <input
                 id="reg-email"
-                className={styles.input}
+                className={`${styles.input} ${fieldErrors.email ? styles.inputError : ''}`}
                 type="email"
                 placeholder="gabriel@exemple.com"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
                 required
               />
+              {fieldErrors.email && <span className={styles.fieldError}>{fieldErrors.email}</span>}
             </div>
 
             <div className={styles.formGroup}>
@@ -187,7 +200,7 @@ export default function Auth() {
               <div className={styles.passwordWrap}>
                 <input
                   id="reg-password"
-                  className={styles.input}
+                  className={`${styles.input} ${fieldErrors.password ? styles.inputError : ''}`}
                   type={showRegPw ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={regPassword}
@@ -203,19 +216,22 @@ export default function Auth() {
                   {showRegPw ? '🙈' : '👁'}
                 </button>
               </div>
+              <span className={styles.hint}>Minimum 8 caractères</span>
+              {fieldErrors.password && <span className={styles.fieldError}>{fieldErrors.password}</span>}
             </div>
 
             <div className={styles.formGroup}>
               <label className={styles.label} htmlFor="reg-confirm">Confirmer le mot de passe</label>
               <input
                 id="reg-confirm"
-                className={styles.input}
+                className={`${styles.input} ${fieldErrors.password_confirmation ? styles.inputError : ''}`}
                 type="password"
                 placeholder="••••••••"
                 value={regConfirm}
                 onChange={(e) => setRegConfirm(e.target.value)}
                 required
               />
+              {fieldErrors.password_confirmation && <span className={styles.fieldError}>{fieldErrors.password_confirmation}</span>}
             </div>
 
             <Button variant="primary" size="lg" type="submit" loading={loading} style={{ width: '100%' }}>
