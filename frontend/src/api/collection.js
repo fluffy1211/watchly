@@ -12,5 +12,8 @@ export const updateStatus = (id, status) =>
 export const toggleFavorite = (id, isFavorite) =>
   axiosInstance.patch(`/collection/${id}/favorite`, { isFavorite })
 
+export const updateRating = (id, rating) =>
+  axiosInstance.patch(`/collection/${id}/rating`, { rating })
+
 export const removeFilm = (id) =>
   axiosInstance.delete(`/collection/${id}`)
