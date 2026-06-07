@@ -103,6 +103,7 @@ export default function FilmDetail() {
         setEntry(normalizeEntry(col))
         collectionId = col.id
       } else {
+        if (!entry) throw new Error('entry missing')
         await updateStatus(entry.id, 'WATCHED')
         collectionId = entry.id
       }
