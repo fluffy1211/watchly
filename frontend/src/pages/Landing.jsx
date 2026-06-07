@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import Button from '../components/ui/Button'
 import styles from './Landing.module.css'
 
@@ -25,17 +25,12 @@ const features = [
 export default function Landing() {
   const { token } = useAuth()
   const navigate = useNavigate()
-  const featuresRef = useRef(null)
 
   useEffect(() => {
     if (token) navigate('/search', { replace: true })
   }, [token, navigate])
 
   if (token) return null
-
-  const scrollToFeatures = () => {
-    featuresRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
 
   return (
     <div className={styles.landing}>
@@ -54,14 +49,11 @@ export default function Landing() {
           <Button variant="primary" size="lg" onClick={() => navigate('/auth?tab=register')}>
             Commencer gratuitement
           </Button>
-          <Button variant="secondary" size="lg" onClick={scrollToFeatures}>
-            Voir la démo
-          </Button>
         </div>
       </section>
 
       {/* Features */}
-      <section className={styles.features} ref={featuresRef}>
+      <section className={styles.features}>
         {features.map((f) => (
           <article key={f.title} className={styles.featureCard}>
             <div className={styles.featureIcon}>{f.icon}</div>
