@@ -21,8 +21,15 @@ export default function FilmCard({ film, collectionEntry = null, onClick }) {
     ? `${TMDB_IMAGE_BASE}${film.poster_path}`
     : null
 
+  const handleKeyDown = (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && onClick) {
+      e.preventDefault()
+      onClick()
+    }
+  }
+
   return (
-    <article className={styles.card} onClick={onClick} role="button" tabIndex={0}>
+    <article className={styles.card} onClick={onClick} onKeyDown={handleKeyDown} role="button" tabIndex={0}>
       <div className={styles.posterWrap}>
         {posterSrc ? (
           <img
