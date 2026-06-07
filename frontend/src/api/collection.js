@@ -4,7 +4,7 @@ export const getCollection = () =>
   axiosInstance.get('/collection')
 
 export const addFilm = (tmdbId) =>
-  axiosInstance.post('/collection/add', { tmdbId })
+  axiosInstance.post('/collection/add', { tmdb_id: parseInt(tmdbId) })
 
 export const updateStatus = (id, status) =>
   axiosInstance.patch(`/collection/${id}/status`, { status })
