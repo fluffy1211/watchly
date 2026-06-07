@@ -42,9 +42,9 @@ export default function FilmDetail() {
       const colRes = await getCollection()
       const colData = colRes.data || []
       const found = colData.find(
-        (e) => e.film?.tmdbId === Number(id) || e.tmdbId === Number(id)
+        (e) => e.film?.tmdb_id === Number(id)
       )
-      setEntry(found || null)
+      setEntry(found ? { ...found, isFavorite: found.is_favorite } : null)
 
       // Load reviews if the film has a local DB id
       if (filmData.localId || filmData.id) {
@@ -75,11 +75,28 @@ export default function FilmDetail() {
     loadData()
   }, [loadData])
 
+  const normalizeEntry = (raw) => ({
+    id: raw.id,
+    status: raw.status,
+    isFavorite: raw.is_favorite,
+    rating: raw.rating ?? null,
+    film: raw.film,
+  })
+
   const handleAddToWatchlist = async () => {
     setActionLoading(true)
     try {
-      await addFilm(Number(id))
-      await loadData()
+      const res = await addFilm(Number(id))
+      setEntry(normalizeEntry(res.data.collection))
+    } catch { setError('Erreur lors de l\'ajout') }
+    finally { setActionLoading(false) }
+  }
+
+  const handleAddWatched = async () => {
+    setActionLoading(true)
+    try {
+      const res = await addFilm(Number(id), 'WATCHED')
+      setEntry(normalizeEntry(res.data.collection))
     } catch { setError('Erreur lors de l\'ajout') }
     finally { setActionLoading(false) }
   }
@@ -226,9 +243,14 @@ export default function FilmDetail() {
           {/* Actions */}
           <div className={styles.actions}>
             {!entry && (
-              <Button variant="primary" onClick={handleAddToWatchlist} loading={actionLoading}>
-                ★ Ajouter à la Watchlist
-              </Button>
+              <>
+                <Button variant="secondary" onClick={handleAddToWatchlist} loading={actionLoading}>
+                  ★ Watchlist
+                </Button>
+                <Button variant="primary" onClick={handleAddWatched} loading={actionLoading}>
+                  ✓ Marquer comme vu
+                </Button>
+              </>
             )}
 
             {status === 'WATCHLIST' && (
