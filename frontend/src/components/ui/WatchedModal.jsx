@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import StarRating from './StarRating'
 import Button from './Button'
 import styles from './WatchedModal.module.css'
@@ -7,21 +7,24 @@ export default function WatchedModal({ isOpen, filmTitle, onConfirm, onSkip, loa
   const [rating, setRating] = useState(0)
   const [review, setReview] = useState('')
 
+  useEffect(() => {
+    if (!isOpen) {
+      setRating(0)
+      setReview('')
+    }
+  }, [isOpen])
+
   if (!isOpen) return null
 
   const reviewValid = review.trim().length === 0 || review.trim().length >= 10
-  const canConfirm = reviewValid
 
   function handleConfirm() {
-    if (!canConfirm) return
+    if (!reviewValid) return
     onConfirm(rating, review.trim())
-    setRating(0)
-    setReview('')
   }
 
   function handleSkip() {
-    setRating(0)
-    setReview('')
+    if (loading) return
     onSkip()
   }
 
@@ -56,7 +59,7 @@ export default function WatchedModal({ isOpen, filmTitle, onConfirm, onSkip, loa
           <Button variant="ghost" onClick={handleSkip} disabled={loading}>
             Passer
           </Button>
-          <Button variant="primary" onClick={handleConfirm} disabled={!canConfirm} loading={loading}>
+          <Button variant="primary" onClick={handleConfirm} disabled={!reviewValid} loading={loading}>
             Confirmer
           </Button>
         </div>
