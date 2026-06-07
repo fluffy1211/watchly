@@ -1,0 +1,234 @@
+.page {
+  padding-bottom: var(--space-12);
+}
+
+/* ─── Header ─── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  color: var(--color-text);
+  font-weight: 400;
+}
+
+/* ─── Tabs ─── */
+.tabs {
+  display: flex;
+  gap: 0;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  border: 1px solid var(--color-border);
+}
+
+.tab {
+  padding: 7px 18px;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 150ms ease;
+  background: transparent;
+  border: none;
+  font-family: var(--font-body);
+}
+
+.tabActive {
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.tabCount {
+  background: rgba(232, 184, 109, 0.18);
+  color: var(--color-accent);
+  border-radius: 10px;
+  padding: 0 7px;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+}
+
+/* ─── Stats ─── */
+.statsRow {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.statNum {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+}
+
+/* ─── Filters ─── */
+.filtersRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.filterChip {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 150ms ease;
+  background: transparent;
+  font-family: var(--font-body);
+}
+
+.filterChip:hover {
+  border-color: var(--color-muted);
+  color: var(--color-text);
+}
+
+.filterChipActive {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: rgba(232, 184, 109, 0.08);
+}
+
+.searchInput {
+  margin-left: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  transition: border-color var(--transition);
+  width: 200px;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.searchInput::placeholder {
+  color: #4a4a5a;
+}
+
+/* ─── Grid ─── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.cardWrap {
+  position: relative;
+}
+
+.favoriteOverlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--color-accent);
+  font-size: 1rem;
+  line-height: 1;
+  pointer-events: none;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* ─── Empty ─── */
+.empty {
+  text-align: center;
+  padding: var(--space-16) 0;
+  color: var(--color-muted);
+  font-size: var(--text-base);
+}
+
+.emptyLink {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.emptyLink:hover {
+  text-decoration: underline;
+}
+
+/* ─── Misc ─── */
+.spinnerWrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-16) 0;
+}
+
+.error {
+  text-align: center;
+  padding: var(--space-4);
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-4);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .statsRow {
+    flex-wrap: wrap;
+  }
+
+  .title {
+    font-size: var(--text-2xl);
+  }
+}
