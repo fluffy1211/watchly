@@ -38,17 +38,17 @@ export default function WatchedModal({ isOpen, filmTitle, onConfirm, onSkip, loa
           <StarRating value={rating} onChange={setRating} />
         </div>
 
-        <div>
+        <div className={styles.reviewBlock}>
           <span className={styles.label}>Votre avis (optionnel)</span>
           <textarea
             className={styles.textarea}
-            placeholder="Partagez votre avis sur ce film… (min. 10 caractères)"
+            placeholder="Partagez votre avis sur ce film… (min. 10 caractères si renseigné)"
             value={review}
             onChange={(e) => setReview(e.target.value)}
             rows={3}
           />
           {review.trim().length > 0 && !reviewValid && (
-            <p className={styles.charHint}>Minimum 10 caractères ({review.trim().length}/10)</p>
+            <p className={styles.charHint}>{review.trim().length}/10 caractères minimum</p>
           )}
         </div>
 
