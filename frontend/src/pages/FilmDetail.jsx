@@ -29,8 +29,6 @@ export default function FilmDetail() {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
-  const [reviewText, setReviewText] = useState('')
-  const [reviewLoading, setReviewLoading] = useState(false)
   const [error, setError] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalLoading, setModalLoading] = useState(false)
@@ -54,19 +52,12 @@ export default function FilmDetail() {
       if (filmData.localId || filmData.id) {
         try {
           const revRes = await getReviews(filmData.localId || filmData.id)
-          setReviews(revRes.data || [])
+          setReviews((revRes.data || []).filter(
+            (r) => (r.user?.id ?? r.userId) !== user?.id
+          ))
         } catch {
           // Reviews may not exist yet
         }
-      }
-
-      // Pre-fill user's own review
-      if (found && filmData) {
-        const revRes2 = await getReviews(filmData.localId || filmData.id).catch(() => ({ data: [] }))
-        const myReview = (revRes2.data || []).find(
-          (r) => r.user?.id === user?.id || r.userId === user?.id
-        )
-        if (myReview) setReviewText(myReview.content || '')
       }
     } catch {
       setError('Impossible de charger le film')
@@ -172,19 +163,6 @@ export default function FilmDetail() {
       setEntry(null)
     } catch { setError('Erreur lors de la suppression') }
     finally { setActionLoading(false) }
-  }
-
-  const handleSubmitReview = async (e) => {
-    e.preventDefault()
-    if (reviewText.trim().length < 10) return
-    setReviewLoading(true)
-    try {
-      const filmId = film.localId || film.id
-      await putReview(filmId, reviewText.trim())
-      const revRes = await getReviews(filmId)
-      setReviews(revRes.data || [])
-    } catch { setError('Erreur lors de la publication') }
-    finally { setReviewLoading(false) }
   }
 
   if (loading) {
@@ -342,27 +320,6 @@ export default function FilmDetail() {
       {/* Reviews section */}
       <section className={styles.reviewsSection}>
         <h2 className={styles.reviewsTitle}>Avis des spectateurs</h2>
-
-        {isWatched && (
-          <form className={styles.reviewForm} onSubmit={handleSubmitReview}>
-            <textarea
-              className={styles.reviewTextarea}
-              placeholder="Partagez votre avis sur ce film… (min. 10 caractères)"
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-              rows={3}
-            />
-            <Button
-              variant="primary"
-              size="sm"
-              type="submit"
-              loading={reviewLoading}
-              disabled={reviewText.trim().length < 10}
-            >
-              Publier mon avis
-            </Button>
-          </form>
-        )}
 
         {reviews.length > 0 ? (
           <div className={styles.reviewsList}>
