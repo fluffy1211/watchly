@@ -3,8 +3,11 @@ import axiosInstance from './axiosInstance'
 export const getCollection = () =>
   axiosInstance.get('/collection')
 
-export const addFilm = (tmdbId) =>
-  axiosInstance.post('/collection/add', { tmdbId })
+export const addFilm = (tmdbId, status = null) => {
+  const body = { tmdb_id: parseInt(tmdbId) }
+  if (status) body.status = status
+  return axiosInstance.post('/collection/add', body)
+}
 
 export const updateStatus = (id, status) =>
   axiosInstance.patch(`/collection/${id}/status`, { status })

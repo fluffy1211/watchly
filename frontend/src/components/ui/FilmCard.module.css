@@ -14,16 +14,21 @@
 
 .posterWrap {
   position: relative;
-  aspect-ratio: 2 / 3;
-  border-radius: var(--radius-md);
+  width: 100%;
+  padding-bottom: 150%;
   overflow: hidden;
+  border-radius: var(--radius-md);
   background-color: var(--color-surface);
 }
 
 .poster {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
   transition: transform var(--transition);
 }
 
@@ -32,6 +37,9 @@
 }
 
 .placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: flex;

@@ -27,11 +27,17 @@ class CollectionController extends AbstractController
         UserCollectionRepository $repo,
         EntityManagerInterface $em,
         Security $security,
+        CollectionService $service,
     ): JsonResponse {
         $data = json_decode($request->getContent(), true) ?? [];
 
         if (!isset($data['tmdb_id']) || !is_int($data['tmdb_id'])) {
             return $this->json(['message' => 'tmdb_id is required and must be an integer'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $status = $data['status'] ?? UserCollection::STATUS_WATCHLIST;
+        if (!in_array($status, [UserCollection::STATUS_WATCHLIST, UserCollection::STATUS_WATCHED], true)) {
+            return $this->json(['message' => 'Invalid status'], Response::HTTP_BAD_REQUEST);
         }
 
         $user = $security->getUser();
@@ -58,6 +64,10 @@ class CollectionController extends AbstractController
         $uc = new UserCollection();
         $uc->setUser($user);
         $uc->setFilm($film);
+
+        if ($status === UserCollection::STATUS_WATCHED) {
+            $service->setStatus($uc, UserCollection::STATUS_WATCHED);
+        }
 
         $em->persist($uc);
         $em->flush();

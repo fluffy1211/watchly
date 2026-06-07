@@ -182,36 +182,6 @@
   font-weight: 400;
 }
 
-.reviewForm {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  margin-bottom: var(--space-6);
-}
-
-.reviewTextarea {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-  font-size: 0.875rem;
-  color: var(--color-text);
-  font-family: var(--font-body);
-  resize: vertical;
-  min-height: 80px;
-  transition: border-color var(--transition);
-}
-
-.reviewTextarea:focus {
-  outline: none;
-  border-color: var(--color-accent);
-}
-
-.reviewTextarea::placeholder {
-  color: #4A4A5A;
-}
-
 .reviewsList {
   display: flex;
   flex-direction: column;
