@@ -143,6 +143,26 @@
   text-align: center;
 }
 
+.fieldError {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  margin-top: 5px;
+}
+
+.inputError {
+  border-color: var(--color-danger) !important;
+}
+
+.hint {
+  display: block;
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  color: var(--color-muted);
+  margin-top: 5px;
+  opacity: 0.7;
+}
+
 /* Legal */
 .legal {
   text-align: center;
