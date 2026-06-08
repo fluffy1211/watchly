@@ -24,6 +24,7 @@
 - [Structure du projet](#structure-du-projet)
 - [CI/CD](#cicd)
 - [Sécurité](#sécurité)
+- [Documentation jalons](#documentation-jalons)
 
 ---
 
@@ -450,6 +451,19 @@ Déclenchée automatiquement à chaque push sur la branche `develop` :
 | Danger | `#F87171` | Suppressions, erreurs |
 
 Polices : **DM Serif Display** (titres 24–48px) · **Inter** (corps 14–16px) · **IBM Plex Mono** (données, badges 12–14px)
+
+---
+
+## Documentation jalons
+
+Livrables produits dans le cadre de la formation CDA IPSSI, disponibles dans [`docs/jalons/`](docs/jalons/) :
+
+| Jalon | Titre | Document |
+|-------|-------|----------|
+| J1 — Janvier 2026 | Cahier des Charges Fonctionnel | [Jalon1_CDCF.pdf](docs/jalons/Jalon1_CDCF.pdf) |
+| J2 — Février 2026 | Méthodologie & Conception UX/UI | [Jalon2_CDC.pdf](docs/jalons/Jalon2_CDC.pdf) |
+| J3 — Mars 2026 | Modélisation de la Base de Données (MCD/MLD/MPD) | [Jalon3_Modelisation_BDD.pdf](docs/jalons/Jalon3_Modelisation_BDD.pdf) |
+| J4 — Avril 2026 | Conception de l'application & Architecture UML | [Jalon4_Conception_Architecture.pdf](docs/jalons/Jalon4_Conception_Architecture.pdf) |
 
 ---
 
