@@ -27,7 +27,7 @@ class ReviewController extends AbstractController
         EntityManagerInterface $em,
         Security $security,
     ): JsonResponse {
-        $film = $filmRepo->find($id);
+        $film = $filmRepo->findOneBy(['tmdbId' => $id]);
         if ($film === null) {
             return $this->json(['message' => 'Film not found'], Response::HTTP_NOT_FOUND);
         }
@@ -82,7 +82,7 @@ class ReviewController extends AbstractController
         FilmRepository $filmRepo,
         ReviewRepository $reviewRepo,
     ): JsonResponse {
-        $film = $filmRepo->find($id);
+        $film = $filmRepo->findOneBy(['tmdbId' => $id]);
         if ($film === null) {
             return $this->json(['message' => 'Film not found'], Response::HTTP_NOT_FOUND);
         }
@@ -109,7 +109,7 @@ class ReviewController extends AbstractController
         EntityManagerInterface $em,
         Security $security,
     ): JsonResponse {
-        $film = $filmRepo->find($id);
+        $film = $filmRepo->findOneBy(['tmdbId' => $id]);
         if ($film === null) {
             return $this->json(['message' => 'Film not found'], Response::HTTP_NOT_FOUND);
         }
