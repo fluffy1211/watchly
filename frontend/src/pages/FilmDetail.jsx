@@ -159,22 +159,26 @@ export default function FilmDetail() {
 
   const handleRatingChange = async (rating) => {
     if (!entry) return
-    setActionLoading(true)
+    const prevRating = entry.rating
+    setEntry((prev) => ({ ...prev, rating }))
     try {
       await updateRating(entry.id, rating)
-      await loadData()
-    } catch { setError('Erreur lors de la mise à jour') }
-    finally { setActionLoading(false) }
+    } catch {
+      setEntry((prev) => ({ ...prev, rating: prevRating }))
+      setError('Erreur lors de la mise à jour')
+    }
   }
 
   const handleToggleFavorite = async () => {
     if (!entry) return
-    setActionLoading(true)
+    const newVal = !entry.isFavorite
+    setEntry((prev) => ({ ...prev, isFavorite: newVal }))
     try {
-      await toggleFavorite(entry.id, !entry.isFavorite)
-      await loadData()
-    } catch { setError('Erreur lors de la mise à jour') }
-    finally { setActionLoading(false) }
+      await toggleFavorite(entry.id, newVal)
+    } catch {
+      setEntry((prev) => ({ ...prev, isFavorite: !newVal }))
+      setError('Erreur lors de la mise à jour')
+    }
   }
 
   const handleRemove = async () => {
