@@ -326,6 +326,71 @@
   font-style: italic;
 }
 
+.myReviewSection {
+  margin-top: 40px;
+}
+
+.reviewEditArea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.reviewEditArea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.reviewEditActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.reviewCharCount {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  margin-right: auto;
+}
+
+.reviewActionBtn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+  transition: opacity 0.15s;
+}
+
+.reviewActionBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.reviewActionBtnGhost {
+  background: transparent;
+  color: var(--color-muted);
+  border-color: var(--color-border);
+}
+
+.reviewActionBtnGhost:hover {
+  color: var(--color-text);
+  border-color: var(--color-muted);
+}
+
 /* ─── Mobile ─── */
 @media (max-width: 768px) {
   .layout {

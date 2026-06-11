@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getById } from '../api/films'
 import { getCollection, addFilm, updateStatus, toggleFavorite, removeFilm, updateRating } from '../api/collection'
-import { getReviews, putReview } from '../api/reviews'
+import { getReviews, putReview, deleteReview } from '../api/reviews'
 import { useAuth } from '../context/AuthContext'
 import StarRating from '../components/ui/StarRating'
 import WatchedModal from '../components/ui/WatchedModal'
@@ -26,6 +26,9 @@ export default function FilmDetail() {
   const [film, setFilm] = useState(null)
   const [entry, setEntry] = useState(null)
   const [reviews, setReviews] = useState([])
+  const [myReview, setMyReview] = useState(null)
+  const [isEditingReview, setIsEditingReview] = useState(false)
+  const [editContent, setEditContent] = useState('')
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
   const [error, setError] = useState('')
@@ -47,16 +50,13 @@ export default function FilmDetail() {
       )
       setEntry(found ? { ...found, isFavorite: found.is_favorite } : null)
 
-      // Load reviews if the film has a local DB id
-      if (filmData.localId || filmData.id) {
-        try {
-          const revRes = await getReviews(filmData.tmdb_id || id)
-          setReviews((revRes.data || []).filter(
-            (r) => (r.user?.id ?? r.userId) !== user?.id
-          ))
-        } catch {
-          // Reviews may not exist yet
-        }
+      try {
+        const revRes = await getReviews(filmData.tmdb_id || id)
+        const all = revRes.data || []
+        setMyReview(all.find((r) => (r.user?.id ?? r.userId) === user?.id) ?? null)
+        setReviews(all.filter((r) => (r.user?.id ?? r.userId) !== user?.id))
+      } catch {
+        // Reviews may not exist yet
       }
     } catch {
       setError('Impossible de charger le film')
@@ -178,6 +178,27 @@ export default function FilmDetail() {
     } catch {
       setEntry((prev) => ({ ...prev, isFavorite: !newVal }))
       setError('Erreur lors de la mise à jour')
+    }
+  }
+
+  const handleEditSave = async () => {
+    if (editContent.length < 10) return
+    try {
+      await putReview(film.tmdb_id || id, editContent)
+      setIsEditingReview(false)
+      await loadData()
+    } catch {
+      setError('Erreur lors de la modification')
+    }
+  }
+
+  const handleDeleteReview = async () => {
+    try {
+      await deleteReview(film.tmdb_id || id)
+      setMyReview(null)
+      await loadData()
+    } catch {
+      setError('Erreur lors de la suppression')
     }
   }
 
@@ -371,6 +392,64 @@ export default function FilmDetail() {
         </div>
       </div>
 
+      {/* Own review */}
+      {myReview && (
+        <section className={styles.myReviewSection}>
+          <h2 className={styles.reviewsTitle}>Mon avis</h2>
+          {isEditingReview ? (
+            <div className={styles.reviewCard}>
+              <textarea
+                className={styles.reviewEditArea}
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                maxLength={2000}
+              />
+              <div className={styles.reviewEditActions}>
+                <span className={styles.reviewCharCount}>{editContent.length}/2000</span>
+                <button
+                  className={styles.reviewActionBtn}
+                  onClick={handleEditSave}
+                  disabled={editContent.length < 10}
+                >
+                  Enregistrer
+                </button>
+                <button
+                  className={`${styles.reviewActionBtn} ${styles.reviewActionBtnGhost}`}
+                  onClick={() => setIsEditingReview(false)}
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.reviewCard}>
+              <div className={styles.reviewHeader}>
+                <span className={styles.reviewDate}>
+                  {myReview.created_at
+                    ? new Date(myReview.created_at).toLocaleDateString('fr-FR')
+                    : ''}
+                </span>
+                <div className={styles.reviewEditActions}>
+                  <button
+                    className={`${styles.reviewActionBtn} ${styles.reviewActionBtnGhost}`}
+                    onClick={() => { setEditContent(myReview.content); setIsEditingReview(true) }}
+                  >
+                    Modifier
+                  </button>
+                  <button
+                    className={`${styles.reviewActionBtn} ${styles.reviewActionBtnGhost}`}
+                    onClick={handleDeleteReview}
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+              <p className={styles.reviewContent}>{myReview.content}</p>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Reviews section */}
       <section className={styles.reviewsSection}>
         <h2 className={styles.reviewsTitle}>Avis des spectateurs</h2>
@@ -384,8 +463,8 @@ export default function FilmDetail() {
                     {review.user?.username || review.username || 'Utilisateur'}
                   </span>
                   <span className={styles.reviewDate}>
-                    {review.createdAt
-                      ? new Date(review.createdAt).toLocaleDateString('fr-FR')
+                    {review.created_at
+                      ? new Date(review.created_at).toLocaleDateString('fr-FR')
                       : ''}
                   </span>
                 </div>
