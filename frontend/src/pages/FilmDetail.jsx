@@ -6,7 +6,6 @@ import { getReviews, putReview } from '../api/reviews'
 import { useAuth } from '../context/AuthContext'
 import StarRating from '../components/ui/StarRating'
 import WatchedModal from '../components/ui/WatchedModal'
-import Button from '../components/ui/Button'
 import Spinner from '../components/ui/Spinner'
 import styles from './FilmDetail.module.css'
 
@@ -158,6 +157,16 @@ export default function FilmDetail() {
     }
   }
 
+  const handleRatingChange = async (rating) => {
+    if (!entry) return
+    setActionLoading(true)
+    try {
+      await updateRating(entry.id, rating)
+      await loadData()
+    } catch { setError('Erreur lors de la mise à jour') }
+    finally { setActionLoading(false) }
+  }
+
   const handleToggleFavorite = async () => {
     if (!entry) return
     setActionLoading(true)
@@ -210,7 +219,7 @@ export default function FilmDetail() {
       </button>
 
       <div className={styles.layout}>
-        {/* Poster */}
+        {/* Poster + actions */}
         <div className={styles.posterCol}>
           {posterSrc ? (
             <img
@@ -221,6 +230,99 @@ export default function FilmDetail() {
           ) : (
             <div className={styles.posterPlaceholder}>🎬</div>
           )}
+
+          {/* Actions */}
+          <div className={styles.actions}>
+            {!entry && (
+              <div className={styles.iconRow}>
+                <button className={styles.iconBtn} onClick={handleAddToWatchlist} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>+</div>
+                  <span className={styles.iconBtnLabel}>Watchlist</span>
+                </button>
+                <button className={styles.iconBtn} onClick={() => handleOpenWatchedModal('add')} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>✓</div>
+                  <span className={styles.iconBtnLabel}>Vu</span>
+                </button>
+                <a
+                  href={`https://www.themoviedb.org/movie/${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.iconBtn}
+                >
+                  <div className={styles.iconBtnInner}>↗</div>
+                  <span className={styles.iconBtnLabel}>TMDB</span>
+                </a>
+              </div>
+            )}
+
+            {status === 'WATCHLIST' && (
+              <div className={styles.iconRow}>
+                <button className={`${styles.iconBtn} ${styles.iconBtnPrimary}`} onClick={() => handleOpenWatchedModal('update')} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>✓</div>
+                  <span className={styles.iconBtnLabel}>Vu</span>
+                </button>
+                <a
+                  href={`https://www.themoviedb.org/movie/${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.iconBtn}
+                >
+                  <div className={styles.iconBtnInner}>↗</div>
+                  <span className={styles.iconBtnLabel}>TMDB</span>
+                </a>
+                <button className={`${styles.iconBtn} ${styles.iconBtnRemove}`} onClick={handleRemove} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>✕</div>
+                  <span className={styles.iconBtnLabel}>Retirer</span>
+                </button>
+              </div>
+            )}
+
+            {isWatched && (
+              <div className={styles.iconRow}>
+                <button
+                  className={`${styles.iconBtn} ${styles.iconBtnPrimary}`}
+                  onClick={handleRemove}
+                  disabled={actionLoading}
+                >
+                  <div className={styles.iconBtnInner}>✓</div>
+                  <span className={styles.iconBtnLabel}>Vu</span>
+                </button>
+                <button
+                  className={`${styles.iconBtn} ${entry?.isFavorite ? styles.iconBtnFavoriteActive : ''}`}
+                  onClick={handleToggleFavorite}
+                  disabled={actionLoading}
+                >
+                  <div className={styles.iconBtnInner}>
+                    {entry?.isFavorite ? '♥' : '♡'}
+                  </div>
+                  <span className={styles.iconBtnLabel}>Favori</span>
+                </button>
+                <a
+                  href={`https://www.themoviedb.org/movie/${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.iconBtn}
+                >
+                  <div className={styles.iconBtnInner}>↗</div>
+                  <span className={styles.iconBtnLabel}>TMDB</span>
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* Star rating (watched) */}
+          {isWatched && (
+            <div className={styles.ratingSection}>
+              <div className={styles.starRow}>
+                <StarRating
+                  value={entry?.rating || 0}
+                  onChange={handleRatingChange}
+                />
+              </div>
+            </div>
+          )}
+
+          {error && <p className={styles.inlineError}>{error}</p>}
         </div>
 
         {/* Meta */}
@@ -262,71 +364,6 @@ export default function FilmDetail() {
           {film.overview && (
             <p className={styles.synopsis}>{film.overview}</p>
           )}
-
-          {/* Star rating */}
-          {isWatched && (
-            <div className={styles.ratingSection}>
-              <p className={styles.ratingLabel}>Votre note personnelle</p>
-              <StarRating
-                value={entry?.rating || 0}
-                onChange={null}
-              />
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className={styles.actions}>
-            {!entry && (
-              <>
-                <Button variant="secondary" onClick={handleAddToWatchlist} loading={actionLoading}>
-                  ★ Watchlist
-                </Button>
-                <Button variant="primary" onClick={() => handleOpenWatchedModal('add')} loading={actionLoading}>
-                  ✓ Marquer comme vu
-                </Button>
-              </>
-            )}
-
-            {status === 'WATCHLIST' && (
-              <>
-                <Button variant="primary" onClick={() => handleOpenWatchedModal('update')} loading={actionLoading}>
-                  ✓ Marquer comme vu
-                </Button>
-                <Button variant="danger" onClick={handleRemove} loading={actionLoading}>
-                  ✕ Retirer de ma liste
-                </Button>
-              </>
-            )}
-
-            {isWatched && (
-              <>
-                <Button variant="secondary" disabled className={styles.watchedBtn}>
-                  ✓ Vu
-                </Button>
-                <Button
-                  variant={entry?.isFavorite ? 'primary' : 'ghost'}
-                  onClick={handleToggleFavorite}
-                  loading={actionLoading}
-                >
-                  ★ Favori
-                </Button>
-                <Button variant="danger" onClick={handleRemove} loading={actionLoading}>
-                  ✕ Retirer
-                </Button>
-              </>
-            )}
-
-            <a
-              href={`https://www.themoviedb.org/movie/${id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.tmdbLink}
-            >
-              <Button variant="secondary">↗ TMDB</Button>
-            </a>
-          </div>
-
-          {error && <p className={styles.inlineError}>{error}</p>}
         </div>
       </div>
 
