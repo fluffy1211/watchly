@@ -13,7 +13,7 @@ export const updateStatus = (id, status) =>
   axiosInstance.patch(`/collection/${id}/status`, { status })
 
 export const toggleFavorite = (id, isFavorite) =>
-  axiosInstance.patch(`/collection/${id}/favorite`, { isFavorite })
+  axiosInstance.patch(`/collection/${id}/favorite`, { is_favorite: isFavorite })
 
 export const updateRating = (id, rating) =>
   axiosInstance.patch(`/collection/${id}/rating`, { rating })
