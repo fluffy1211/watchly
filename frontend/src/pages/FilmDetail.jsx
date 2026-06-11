@@ -257,7 +257,11 @@ export default function FilmDetail() {
 
             {status === 'WATCHLIST' && (
               <div className={styles.iconRow}>
-                <button className={`${styles.iconBtn} ${styles.iconBtnPrimary}`} onClick={() => handleOpenWatchedModal('update')} disabled={actionLoading}>
+                <button className={`${styles.iconBtn} ${styles.iconBtnPrimary}`} onClick={handleRemove} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>+</div>
+                  <span className={styles.iconBtnLabel}>Watchlist</span>
+                </button>
+                <button className={styles.iconBtn} onClick={() => handleOpenWatchedModal('update')} disabled={actionLoading}>
                   <div className={styles.iconBtnInner}>✓</div>
                   <span className={styles.iconBtnLabel}>Vu</span>
                 </button>
@@ -270,10 +274,6 @@ export default function FilmDetail() {
                   <div className={styles.iconBtnInner}>↗</div>
                   <span className={styles.iconBtnLabel}>TMDB</span>
                 </a>
-                <button className={`${styles.iconBtn} ${styles.iconBtnRemove}`} onClick={handleRemove} disabled={actionLoading}>
-                  <div className={styles.iconBtnInner}>✕</div>
-                  <span className={styles.iconBtnLabel}>Retirer</span>
-                </button>
               </div>
             )}
 
