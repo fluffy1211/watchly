@@ -5,3 +5,6 @@ export const getReviews = (filmId) =>
 
 export const putReview = (filmId, content) =>
   axiosInstance.put(`/films/${filmId}/review`, { content })
+
+export const deleteReview = (filmId) =>
+  axiosInstance.delete(`/films/${filmId}/review`)

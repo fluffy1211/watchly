@@ -40,6 +40,9 @@
 /* ─── Poster ─── */
 .posterCol {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .poster {
@@ -133,28 +136,125 @@
   max-width: 540px;
 }
 
-/* Rating */
+/* ─── Rating row (watched) ─── */
 .ratingSection {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
 }
 
-.ratingLabel {
-  font-size: 0.75rem;
+.starRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.starScore {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
   color: var(--color-muted);
-  font-weight: 500;
 }
 
-/* Actions */
+.ratingHint {
+  font-size: 0.67rem;
+  color: var(--color-muted);
+  opacity: 0.5;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Actions ─── */
 .actions {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.watchedBtn {
-  opacity: 0.7;
+/* ─── Icon row (watched state) ─── */
+.iconRow {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.iconBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-decoration: none;
+}
+
+.iconBtn:disabled {
+  cursor: default;
+}
+
+.iconBtnInner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-muted);
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease, transform 120ms ease;
+  background: transparent;
+}
+
+.iconBtn:not(:disabled):hover .iconBtnInner {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--color-text);
+  transform: scale(1.06);
+}
+
+.iconBtnLabel {
+  font-size: 0.6rem;
+  color: var(--color-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* State variants */
+.iconBtnWatched .iconBtnInner {
+  border-color: rgba(232, 184, 109, 0.4);
+  color: var(--color-accent);
+  background: rgba(232, 184, 109, 0.08);
+}
+
+.iconBtnFavoriteActive .iconBtnInner {
+  border-color: rgba(232, 184, 109, 0.5);
+  color: var(--color-accent);
+  background: rgba(232, 184, 109, 0.12);
+}
+
+.iconBtnPrimary .iconBtnInner {
+  border-color: rgba(232, 184, 109, 0.5);
+  color: var(--color-accent);
+  background: rgba(232, 184, 109, 0.1);
+}
+
+.iconBtnPrimary:not(:disabled):hover .iconBtnInner {
+  border-color: var(--color-accent);
+  background: rgba(232, 184, 109, 0.18);
+  transform: scale(1.06);
+}
+
+.iconBtnRemove:not(:disabled):hover .iconBtnInner {
+  border-color: rgba(255, 80, 80, 0.5);
+  color: var(--color-danger);
+  background: rgba(255, 80, 80, 0.06);
 }
 
 .tmdbLink {
@@ -224,6 +324,71 @@
   color: var(--color-muted);
   font-size: var(--text-sm);
   font-style: italic;
+}
+
+.myReviewSection {
+  margin-top: 40px;
+}
+
+.reviewEditArea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.reviewEditArea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.reviewEditActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.reviewCharCount {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  margin-right: auto;
+}
+
+.reviewActionBtn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+  transition: opacity 0.15s;
+}
+
+.reviewActionBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.reviewActionBtnGhost {
+  background: transparent;
+  color: var(--color-muted);
+  border-color: var(--color-border);
+}
+
+.reviewActionBtnGhost:hover {
+  color: var(--color-text);
+  border-color: var(--color-muted);
 }
 
 /* ─── Mobile ─── */

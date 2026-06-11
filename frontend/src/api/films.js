@@ -6,5 +6,11 @@ export const search = (query) =>
 export const getById = (id) =>
   axiosInstance.get(`/films/${id}`)
 
-export const getPopular = () =>
-  axiosInstance.get('/films/popular')
+export const getPopular = (page = 1) =>
+  axiosInstance.get('/films/popular', { params: { page } })
+
+export const getGenres = () =>
+  axiosInstance.get('/films/genres')
+
+export const discoverByGenre = (genreId, page = 1) =>
+  axiosInstance.get('/films/discover', { params: { genre_id: genreId, page } })

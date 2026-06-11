@@ -28,11 +28,41 @@ class FilmController extends AbstractController
     }
 
     #[Route('/api/films/popular', name: 'api_films_popular', methods: ['GET'])]
-    public function popular(TMDBService $tmdb): JsonResponse
+    public function popular(Request $request, TMDBService $tmdb): JsonResponse
     {
-        $results = $tmdb->getPopular();
+        $page = max(1, (int) $request->query->get('page', 1));
+        $data = $tmdb->getPopular($page);
 
-        return $this->json(array_map(fn($m) => $this->formatSearchResult($m), $results));
+        return $this->json([
+            'films'       => array_map(fn($m) => $this->formatSearchResult($m), $data['results']),
+            'page'        => $data['page'],
+            'total_pages' => $data['total_pages'],
+        ]);
+    }
+
+    #[Route('/api/films/genres', name: 'api_films_genres', methods: ['GET'])]
+    public function genres(TMDBService $tmdb): JsonResponse
+    {
+        return $this->json(['genres' => $tmdb->getGenres()]);
+    }
+
+    #[Route('/api/films/discover', name: 'api_films_discover', methods: ['GET'])]
+    public function discover(Request $request, TMDBService $tmdb): JsonResponse
+    {
+        $genreId = (int) $request->query->get('genre_id', 0);
+        $page    = max(1, (int) $request->query->get('page', 1));
+
+        if ($genreId <= 0) {
+            return $this->json(['message' => 'Missing or invalid genre_id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $data = $tmdb->discoverByGenre($genreId, $page);
+
+        return $this->json([
+            'films'       => array_map(fn($m) => $this->formatSearchResult($m), $data['results']),
+            'page'        => $data['page'],
+            'total_pages' => $data['total_pages'],
+        ]);
     }
 
     #[Route('/api/films/{id}', name: 'api_films_detail', methods: ['GET'])]

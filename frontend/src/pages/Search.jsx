@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { search as searchFilms, getPopular } from '../api/films'
+import { search as searchFilms, getPopular, getGenres, discoverByGenre } from '../api/films'
 import { getCollection } from '../api/collection'
 import FilmCard from '../components/ui/FilmCard'
 import Button from '../components/ui/Button'
@@ -12,19 +12,30 @@ export default function Search() {
   const [films, setFilms] = useState([])
   const [collection, setCollection] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [isSearchResult, setIsSearchResult] = useState(false)
   const [error, setError] = useState('')
+  const [genres, setGenres] = useState([])
+  const [selectedGenre, setSelectedGenre] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [genreScrolled, setGenreScrolled] = useState(false)
+  const genreBarRef = useRef(null)
 
-  // Load popular films + user collection on mount
   useEffect(() => {
     const loadInitial = async () => {
       setLoading(true)
       try {
-        const [popularRes, collectionRes] = await Promise.all([
-          getPopular(),
+        const [popularRes, genresRes, collectionRes] = await Promise.all([
+          getPopular(1),
+          getGenres(),
           getCollection(),
         ])
-        setFilms(popularRes.data || [])
+        const popular = popularRes.data
+        setFilms(popular.films || [])
+        setCurrentPage(popular.page || 1)
+        setTotalPages(popular.total_pages || 1)
+        setGenres(genresRes.data?.genres || [])
         setCollection(collectionRes.data || [])
       } catch {
         setError('Impossible de charger les films')
@@ -35,16 +46,27 @@ export default function Search() {
     loadInitial()
   }, [])
 
+  useEffect(() => {
+    const el = genreBarRef.current
+    if (!el) return
+    const onScroll = () => setGenreScrolled(el.scrollLeft > 0)
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [genres])
+
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!query.trim()) return
 
     setLoading(true)
     setError('')
+    setSelectedGenre(null)
     try {
       const res = await searchFilms(query.trim())
       setFilms(res.data || [])
       setIsSearchResult(true)
+      setCurrentPage(1)
+      setTotalPages(1)
     } catch {
       setError('Erreur lors de la recherche')
     } finally {
@@ -52,8 +74,49 @@ export default function Search() {
     }
   }
 
+  const handleGenreSelect = async (genre) => {
+    const next = selectedGenre?.id === genre?.id ? null : genre
+    setSelectedGenre(next)
+    setIsSearchResult(false)
+    setLoading(true)
+    setError('')
+    try {
+      const res = next
+        ? await discoverByGenre(next.id, 1)
+        : await getPopular(1)
+      const data = res.data
+      setFilms(data.films || [])
+      setCurrentPage(data.page || 1)
+      setTotalPages(data.total_pages || 1)
+    } catch {
+      setError('Impossible de charger les films')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLoadMore = async () => {
+    const nextPage = currentPage + 1
+    setLoadingMore(true)
+    try {
+      const res = selectedGenre
+        ? await discoverByGenre(selectedGenre.id, nextPage)
+        : await getPopular(nextPage)
+      const data = res.data
+      setFilms((prev) => [...prev, ...(data.films || [])])
+      setCurrentPage(data.page || nextPage)
+      setTotalPages(data.total_pages || totalPages)
+    } catch {
+      setError('Impossible de charger plus de films')
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
   const findCollectionEntry = (tmdbId) =>
     collection.find((entry) => entry.film?.tmdbId === tmdbId || entry.tmdbId === tmdbId)
+
+  const showLoadMore = !isSearchResult && !loading && currentPage < totalPages
 
   return (
     <div className={styles.page}>
@@ -75,13 +138,35 @@ export default function Search() {
             Rechercher
           </Button>
         </form>
+
+        {/* Genre chips */}
+        {genres.length > 0 && !isSearchResult && (
+          <div className={`${styles.genreBarWrap} ${genreScrolled ? styles.genreBarScrolled : ''}`}>
+          <div className={styles.genreBar} ref={genreBarRef}>
+            {genres.map((genre) => (
+              <button
+                key={genre.id}
+                className={`${styles.genreChip} ${selectedGenre?.id === genre.id ? styles.genreChipActive : ''}`}
+                onClick={() => handleGenreSelect(genre)}
+                type="button"
+              >
+                {genre.name}
+              </button>
+            ))}
+          </div>
+          </div>
+        )}
+
         {isSearchResult && !loading && (
           <p className={styles.resultsCount}>
-            {films.length} résultat{films.length !== 1 ? 's' : ''} · <span className={styles.source}>Source : API TMDB</span>
+            {films.length} résultat{films.length !== 1 ? 's' : ''} ·{' '}
+            <span className={styles.source}>Source : API TMDB</span>
           </p>
         )}
         {!isSearchResult && !loading && (
-          <p className={styles.sectionLabel}>Films populaires</p>
+          <p className={styles.sectionLabel}>
+            {selectedGenre ? selectedGenre.name : 'Films populaires'}
+          </p>
         )}
       </div>
 
@@ -121,6 +206,15 @@ export default function Search() {
       {!loading && films.length === 0 && isSearchResult && (
         <div className={styles.empty}>
           <p>Aucun film trouvé pour cette recherche</p>
+        </div>
+      )}
+
+      {/* Load More */}
+      {showLoadMore && (
+        <div className={styles.loadMoreWrap}>
+          <Button variant="secondary" onClick={handleLoadMore} loading={loadingMore}>
+            Charger plus
+          </Button>
         </div>
       )}
     </div>

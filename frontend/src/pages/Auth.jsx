@@ -45,7 +45,9 @@ export default function Auth() {
       await login(loginEmail, loginPassword)
       navigate('/search', { replace: true })
     } catch (err) {
-      const msg = err.response?.data?.message || err.response?.data?.error || 'Identifiants invalides'
+      const msg = err.response?.status === 401
+        ? 'Identifiants invalides'
+        : (err.response?.data?.message || err.response?.data?.error || 'Identifiants invalides')
       setError(msg)
     } finally {
       setLoading(false)
@@ -119,7 +121,6 @@ export default function Auth() {
                 id="login-email"
                 className={styles.input}
                 type="email"
-                placeholder="gabriel@exemple.com"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
                 required
@@ -133,7 +134,6 @@ export default function Auth() {
                   id="login-password"
                   className={styles.input}
                   type={showLoginPw ? 'text' : 'password'}
-                  placeholder="••••••••"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   required
@@ -173,7 +173,6 @@ export default function Auth() {
                 id="reg-username"
                 className={`${styles.input} ${fieldErrors.username ? styles.inputError : ''}`}
                 type="text"
-                placeholder="cinephile42"
                 value={regUsername}
                 onChange={(e) => setRegUsername(e.target.value)}
                 required
@@ -187,7 +186,6 @@ export default function Auth() {
                 id="reg-email"
                 className={`${styles.input} ${fieldErrors.email ? styles.inputError : ''}`}
                 type="email"
-                placeholder="gabriel@exemple.com"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
                 required
@@ -202,7 +200,6 @@ export default function Auth() {
                   id="reg-password"
                   className={`${styles.input} ${fieldErrors.password ? styles.inputError : ''}`}
                   type={showRegPw ? 'text' : 'password'}
-                  placeholder="••••••••"
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
                   required
@@ -226,7 +223,6 @@ export default function Auth() {
                 id="reg-confirm"
                 className={`${styles.input} ${fieldErrors.password_confirmation ? styles.inputError : ''}`}
                 type="password"
-                placeholder="••••••••"
                 value={regConfirm}
                 onChange={(e) => setRegConfirm(e.target.value)}
                 required

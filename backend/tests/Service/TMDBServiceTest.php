@@ -46,11 +46,13 @@ class TMDBServiceTest extends TestCase
 
     public function testGetPopularReturnsResults(): void
     {
-        $payload = ['results' => [['id' => 5, 'title' => 'Popular Film']]];
+        $payload = ['results' => [['id' => 5, 'title' => 'Popular Film']], 'total_pages' => 3, 'page' => 1];
         $client = new MockHttpClient(new MockResponse(json_encode($payload)));
 
-        $results = $this->makeService($client)->getPopular();
+        $data = $this->makeService($client)->getPopular();
 
-        $this->assertCount(1, $results);
+        $this->assertCount(1, $data['results']);
+        $this->assertSame(3, $data['total_pages']);
+        $this->assertSame(1, $data['page']);
     }
 }

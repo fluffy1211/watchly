@@ -2,11 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getById } from '../api/films'
 import { getCollection, addFilm, updateStatus, toggleFavorite, removeFilm, updateRating } from '../api/collection'
-import { getReviews, putReview } from '../api/reviews'
+import { getReviews, putReview, deleteReview } from '../api/reviews'
 import { useAuth } from '../context/AuthContext'
 import StarRating from '../components/ui/StarRating'
 import WatchedModal from '../components/ui/WatchedModal'
-import Button from '../components/ui/Button'
 import Spinner from '../components/ui/Spinner'
 import styles from './FilmDetail.module.css'
 
@@ -27,6 +26,9 @@ export default function FilmDetail() {
   const [film, setFilm] = useState(null)
   const [entry, setEntry] = useState(null)
   const [reviews, setReviews] = useState([])
+  const [myReview, setMyReview] = useState(null)
+  const [isEditingReview, setIsEditingReview] = useState(false)
+  const [editContent, setEditContent] = useState('')
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
   const [error, setError] = useState('')
@@ -48,16 +50,13 @@ export default function FilmDetail() {
       )
       setEntry(found ? { ...found, isFavorite: found.is_favorite } : null)
 
-      // Load reviews if the film has a local DB id
-      if (filmData.localId || filmData.id) {
-        try {
-          const revRes = await getReviews(filmData.localId || filmData.id)
-          setReviews((revRes.data || []).filter(
-            (r) => (r.user?.id ?? r.userId) !== user?.id
-          ))
-        } catch {
-          // Reviews may not exist yet
-        }
+      try {
+        const revRes = await getReviews(filmData.tmdb_id || id)
+        const all = revRes.data || []
+        setMyReview(all.find((r) => (r.user?.id ?? r.userId) === user?.id) ?? null)
+        setReviews(all.filter((r) => (r.user?.id ?? r.userId) !== user?.id))
+      } catch {
+        // Reviews may not exist yet
       }
     } catch {
       setError('Impossible de charger le film')
@@ -98,8 +97,21 @@ export default function FilmDetail() {
       let collectionId
 
       if (pendingWatchedPath === 'add') {
-        const res = await addFilm(Number(id), 'WATCHED')
-        const col = res.data.collection
+        let col
+        try {
+          const res = await addFilm(Number(id), 'WATCHED')
+          col = res.data.collection
+        } catch (err) {
+          if (err?.response?.status === 409) {
+            const colRes = await getCollection()
+            const found = (colRes.data || []).find((e) => e.film?.tmdb_id === Number(id))
+            if (!found) throw err
+            await updateStatus(found.id, 'WATCHED')
+            col = found
+          } else {
+            throw err
+          }
+        }
         setEntry(normalizeEntry(col))
         collectionId = col.id
       } else {
@@ -112,9 +124,8 @@ export default function FilmDetail() {
         await updateRating(collectionId, rating)
       }
 
-      const filmId = film.localId || film.id
       if (reviewText.length >= 10) {
-        await putReview(filmId, reviewText)
+        await putReview(film.tmdb_id || id, reviewText)
       }
 
       setModalOpen(false)
@@ -146,14 +157,49 @@ export default function FilmDetail() {
     }
   }
 
+  const handleRatingChange = async (rating) => {
+    if (!entry) return
+    const prevRating = entry.rating
+    setEntry((prev) => ({ ...prev, rating }))
+    try {
+      await updateRating(entry.id, rating)
+    } catch {
+      setEntry((prev) => ({ ...prev, rating: prevRating }))
+      setError('Erreur lors de la mise à jour')
+    }
+  }
+
   const handleToggleFavorite = async () => {
     if (!entry) return
-    setActionLoading(true)
+    const newVal = !entry.isFavorite
+    setEntry((prev) => ({ ...prev, isFavorite: newVal }))
     try {
-      await toggleFavorite(entry.id, !entry.isFavorite)
+      await toggleFavorite(entry.id, newVal)
+    } catch {
+      setEntry((prev) => ({ ...prev, isFavorite: !newVal }))
+      setError('Erreur lors de la mise à jour')
+    }
+  }
+
+  const handleEditSave = async () => {
+    if (editContent.length < 10) return
+    try {
+      await putReview(film.tmdb_id || id, editContent)
+      setIsEditingReview(false)
       await loadData()
-    } catch { setError('Erreur lors de la mise à jour') }
-    finally { setActionLoading(false) }
+    } catch {
+      setError('Erreur lors de la modification')
+    }
+  }
+
+  const handleDeleteReview = async () => {
+    try {
+      await deleteReview(film.tmdb_id || id)
+      setMyReview(null)
+      await loadData()
+    } catch {
+      setError('Erreur lors de la suppression')
+    }
   }
 
   const handleRemove = async () => {
@@ -198,7 +244,7 @@ export default function FilmDetail() {
       </button>
 
       <div className={styles.layout}>
-        {/* Poster */}
+        {/* Poster + actions */}
         <div className={styles.posterCol}>
           {posterSrc ? (
             <img
@@ -209,6 +255,99 @@ export default function FilmDetail() {
           ) : (
             <div className={styles.posterPlaceholder}>🎬</div>
           )}
+
+          {/* Actions */}
+          <div className={styles.actions}>
+            {!entry && (
+              <div className={styles.iconRow}>
+                <button className={styles.iconBtn} onClick={handleAddToWatchlist} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>+</div>
+                  <span className={styles.iconBtnLabel}>Watchlist</span>
+                </button>
+                <button className={styles.iconBtn} onClick={() => handleOpenWatchedModal('add')} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>✓</div>
+                  <span className={styles.iconBtnLabel}>Vu</span>
+                </button>
+                <a
+                  href={`https://www.themoviedb.org/movie/${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.iconBtn}
+                >
+                  <div className={styles.iconBtnInner}>↗</div>
+                  <span className={styles.iconBtnLabel}>TMDB</span>
+                </a>
+              </div>
+            )}
+
+            {status === 'WATCHLIST' && (
+              <div className={styles.iconRow}>
+                <button className={`${styles.iconBtn} ${styles.iconBtnPrimary}`} onClick={handleRemove} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>+</div>
+                  <span className={styles.iconBtnLabel}>Watchlist</span>
+                </button>
+                <button className={styles.iconBtn} onClick={() => handleOpenWatchedModal('update')} disabled={actionLoading}>
+                  <div className={styles.iconBtnInner}>✓</div>
+                  <span className={styles.iconBtnLabel}>Vu</span>
+                </button>
+                <a
+                  href={`https://www.themoviedb.org/movie/${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.iconBtn}
+                >
+                  <div className={styles.iconBtnInner}>↗</div>
+                  <span className={styles.iconBtnLabel}>TMDB</span>
+                </a>
+              </div>
+            )}
+
+            {isWatched && (
+              <div className={styles.iconRow}>
+                <button
+                  className={`${styles.iconBtn} ${styles.iconBtnPrimary}`}
+                  onClick={handleRemove}
+                  disabled={actionLoading}
+                >
+                  <div className={styles.iconBtnInner}>✓</div>
+                  <span className={styles.iconBtnLabel}>Vu</span>
+                </button>
+                <button
+                  className={`${styles.iconBtn} ${entry?.isFavorite ? styles.iconBtnFavoriteActive : ''}`}
+                  onClick={handleToggleFavorite}
+                  disabled={actionLoading}
+                >
+                  <div className={styles.iconBtnInner}>
+                    {entry?.isFavorite ? '♥' : '♡'}
+                  </div>
+                  <span className={styles.iconBtnLabel}>Favori</span>
+                </button>
+                <a
+                  href={`https://www.themoviedb.org/movie/${id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.iconBtn}
+                >
+                  <div className={styles.iconBtnInner}>↗</div>
+                  <span className={styles.iconBtnLabel}>TMDB</span>
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* Star rating (watched) */}
+          {isWatched && (
+            <div className={styles.ratingSection}>
+              <div className={styles.starRow}>
+                <StarRating
+                  value={entry?.rating || 0}
+                  onChange={handleRatingChange}
+                />
+              </div>
+            </div>
+          )}
+
+          {error && <p className={styles.inlineError}>{error}</p>}
         </div>
 
         {/* Meta */}
@@ -250,73 +389,66 @@ export default function FilmDetail() {
           {film.overview && (
             <p className={styles.synopsis}>{film.overview}</p>
           )}
-
-          {/* Star rating */}
-          {isWatched && (
-            <div className={styles.ratingSection}>
-              <p className={styles.ratingLabel}>Votre note personnelle</p>
-              <StarRating
-                value={entry?.rating || 0}
-                onChange={null}
-              />
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className={styles.actions}>
-            {!entry && (
-              <>
-                <Button variant="secondary" onClick={handleAddToWatchlist} loading={actionLoading}>
-                  ★ Watchlist
-                </Button>
-                <Button variant="primary" onClick={() => handleOpenWatchedModal('add')} loading={actionLoading}>
-                  ✓ Marquer comme vu
-                </Button>
-              </>
-            )}
-
-            {status === 'WATCHLIST' && (
-              <>
-                <Button variant="primary" onClick={() => handleOpenWatchedModal('update')} loading={actionLoading}>
-                  ✓ Marquer comme vu
-                </Button>
-                <Button variant="danger" onClick={handleRemove} loading={actionLoading}>
-                  ✕ Retirer de ma liste
-                </Button>
-              </>
-            )}
-
-            {isWatched && (
-              <>
-                <Button variant="secondary" disabled className={styles.watchedBtn}>
-                  ✓ Vu
-                </Button>
-                <Button
-                  variant={entry?.isFavorite ? 'primary' : 'ghost'}
-                  onClick={handleToggleFavorite}
-                  loading={actionLoading}
-                >
-                  ★ Favori
-                </Button>
-                <Button variant="danger" onClick={handleRemove} loading={actionLoading}>
-                  ✕ Retirer
-                </Button>
-              </>
-            )}
-
-            <a
-              href={`https://www.themoviedb.org/movie/${id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.tmdbLink}
-            >
-              <Button variant="secondary">↗ TMDB</Button>
-            </a>
-          </div>
-
-          {error && <p className={styles.inlineError}>{error}</p>}
         </div>
       </div>
+
+      {/* Own review */}
+      {myReview && (
+        <section className={styles.myReviewSection}>
+          <h2 className={styles.reviewsTitle}>Mon avis</h2>
+          {isEditingReview ? (
+            <div className={styles.reviewCard}>
+              <textarea
+                className={styles.reviewEditArea}
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                maxLength={2000}
+              />
+              <div className={styles.reviewEditActions}>
+                <span className={styles.reviewCharCount}>{editContent.length}/2000</span>
+                <button
+                  className={styles.reviewActionBtn}
+                  onClick={handleEditSave}
+                  disabled={editContent.length < 10}
+                >
+                  Enregistrer
+                </button>
+                <button
+                  className={`${styles.reviewActionBtn} ${styles.reviewActionBtnGhost}`}
+                  onClick={() => setIsEditingReview(false)}
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.reviewCard}>
+              <div className={styles.reviewHeader}>
+                <span className={styles.reviewDate}>
+                  {myReview.created_at
+                    ? new Date(myReview.created_at).toLocaleDateString('fr-FR')
+                    : ''}
+                </span>
+                <div className={styles.reviewEditActions}>
+                  <button
+                    className={`${styles.reviewActionBtn} ${styles.reviewActionBtnGhost}`}
+                    onClick={() => { setEditContent(myReview.content); setIsEditingReview(true) }}
+                  >
+                    Modifier
+                  </button>
+                  <button
+                    className={`${styles.reviewActionBtn} ${styles.reviewActionBtnGhost}`}
+                    onClick={handleDeleteReview}
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+              <p className={styles.reviewContent}>{myReview.content}</p>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Reviews section */}
       <section className={styles.reviewsSection}>
@@ -331,8 +463,8 @@ export default function FilmDetail() {
                     {review.user?.username || review.username || 'Utilisateur'}
                   </span>
                   <span className={styles.reviewDate}>
-                    {review.createdAt
-                      ? new Date(review.createdAt).toLocaleDateString('fr-FR')
+                    {review.created_at
+                      ? new Date(review.created_at).toLocaleDateString('fr-FR')
                       : ''}
                   </span>
                 </div>
