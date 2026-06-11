@@ -51,7 +51,7 @@ export default function FilmDetail() {
       // Load reviews if the film has a local DB id
       if (filmData.localId || filmData.id) {
         try {
-          const revRes = await getReviews(filmData.localId || filmData.id)
+          const revRes = await getReviews(filmData.tmdb_id || id)
           setReviews((revRes.data || []).filter(
             (r) => (r.user?.id ?? r.userId) !== user?.id
           ))
@@ -98,8 +98,21 @@ export default function FilmDetail() {
       let collectionId
 
       if (pendingWatchedPath === 'add') {
-        const res = await addFilm(Number(id), 'WATCHED')
-        const col = res.data.collection
+        let col
+        try {
+          const res = await addFilm(Number(id), 'WATCHED')
+          col = res.data.collection
+        } catch (err) {
+          if (err?.response?.status === 409) {
+            const colRes = await getCollection()
+            const found = (colRes.data || []).find((e) => e.film?.tmdb_id === Number(id))
+            if (!found) throw err
+            await updateStatus(found.id, 'WATCHED')
+            col = found
+          } else {
+            throw err
+          }
+        }
         setEntry(normalizeEntry(col))
         collectionId = col.id
       } else {
@@ -112,9 +125,8 @@ export default function FilmDetail() {
         await updateRating(collectionId, rating)
       }
 
-      const filmId = film.localId || film.id
       if (reviewText.length >= 10) {
-        await putReview(filmId, reviewText)
+        await putReview(film.tmdb_id || id, reviewText)
       }
 
       setModalOpen(false)
