@@ -80,20 +80,24 @@ class FilmControllerTest extends BaseWebTestCase
         $token = $this->getAuthToken();
 
         $this->mockTmdb([
-            'getPopular' => [[
-                'id' => 550, 'title' => 'Fight Club', 'original_title' => 'Fight Club',
-                'release_date' => '1999-10-15', 'poster_path' => '/poster.jpg',
-                'vote_average' => 8.8, 'overview' => 'An insomniac office worker.',
-            ]],
+            'getPopular' => [
+                'results' => [[
+                    'id' => 550, 'title' => 'Fight Club', 'original_title' => 'Fight Club',
+                    'release_date' => '1999-10-15', 'poster_path' => '/poster.jpg',
+                    'vote_average' => 8.8, 'overview' => 'An insomniac office worker.',
+                ]],
+                'page'        => 1,
+                'total_pages' => 10,
+            ],
         ]);
 
         $this->client->request('GET', '/api/films/popular', [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $token]);
 
         $this->assertResponseStatusCodeSame(200);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertIsArray($data);
-        $this->assertCount(1, $data);
-        $this->assertSame(550, $data[0]['tmdb_id']);
+        $this->assertArrayHasKey('films', $data);
+        $this->assertCount(1, $data['films']);
+        $this->assertSame(550, $data['films'][0]['tmdb_id']);
     }
 
     public function testGetFilmByIdNotFound(): void

@@ -26,9 +26,33 @@ class TMDBService
         return $this->get(sprintf('/movie/%d', $tmdbId), ['append_to_response' => 'credits']);
     }
 
-    public function getPopular(): array
+    public function getPopular(int $page = 1): array
     {
-        return $this->get('/movie/popular')['results'] ?? [];
+        $response = $this->get('/movie/popular', ['page' => $page]);
+        return [
+            'results'     => $response['results'] ?? [],
+            'total_pages' => $response['total_pages'] ?? 1,
+            'page'        => $response['page'] ?? $page,
+        ];
+    }
+
+    public function getGenres(): array
+    {
+        return $this->get('/genre/movie/list')['genres'] ?? [];
+    }
+
+    public function discoverByGenre(int $genreId, int $page = 1): array
+    {
+        $response = $this->get('/discover/movie', [
+            'with_genres' => $genreId,
+            'sort_by'     => 'popularity.desc',
+            'page'        => $page,
+        ]);
+        return [
+            'results'     => $response['results'] ?? [],
+            'total_pages' => $response['total_pages'] ?? 1,
+            'page'        => $response['page'] ?? $page,
+        ];
     }
 
     private function get(string $path, array $extra = []): array
