@@ -17,9 +17,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ReviewController extends AbstractController
 {
-    #[Route('/api/films/{id}/review', name: 'api_film_review_put', methods: ['PUT'])]
+    #[Route('/api/films/{tmdbId}/review', name: 'api_film_review_put', methods: ['PUT'])]
     public function put(
-        int $id,
+        int $tmdbId,
         Request $request,
         FilmRepository $filmRepo,
         ReviewRepository $reviewRepo,
@@ -27,7 +27,7 @@ class ReviewController extends AbstractController
         EntityManagerInterface $em,
         Security $security,
     ): JsonResponse {
-        $film = $filmRepo->find($id);
+        $film = $filmRepo->findOneBy(['tmdbId' => $tmdbId]);
         if ($film === null) {
             return $this->json(['message' => 'Film not found'], Response::HTTP_NOT_FOUND);
         }
@@ -76,13 +76,13 @@ class ReviewController extends AbstractController
         ], $isNew ? Response::HTTP_CREATED : Response::HTTP_OK);
     }
 
-    #[Route('/api/films/{id}/reviews', name: 'api_film_reviews_get', methods: ['GET'])]
+    #[Route('/api/films/{tmdbId}/reviews', name: 'api_film_reviews_get', methods: ['GET'])]
     public function list(
-        int $id,
+        int $tmdbId,
         FilmRepository $filmRepo,
         ReviewRepository $reviewRepo,
     ): JsonResponse {
-        $film = $filmRepo->find($id);
+        $film = $filmRepo->findOneBy(['tmdbId' => $tmdbId]);
         if ($film === null) {
             return $this->json(['message' => 'Film not found'], Response::HTTP_NOT_FOUND);
         }
@@ -101,15 +101,15 @@ class ReviewController extends AbstractController
         ], $reviews));
     }
 
-    #[Route('/api/films/{id}/review', name: 'api_film_review_delete', methods: ['DELETE'])]
+    #[Route('/api/films/{tmdbId}/review', name: 'api_film_review_delete', methods: ['DELETE'])]
     public function delete(
-        int $id,
+        int $tmdbId,
         FilmRepository $filmRepo,
         ReviewRepository $reviewRepo,
         EntityManagerInterface $em,
         Security $security,
     ): JsonResponse {
-        $film = $filmRepo->find($id);
+        $film = $filmRepo->findOneBy(['tmdbId' => $tmdbId]);
         if ($film === null) {
             return $this->json(['message' => 'Film not found'], Response::HTTP_NOT_FOUND);
         }
