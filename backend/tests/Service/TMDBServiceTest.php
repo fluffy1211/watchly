@@ -22,7 +22,7 @@ class TMDBServiceTest extends TestCase
 
         $results = $this->makeService($client)->searchMovies('Test');
 
-        $this->assertSame(['results' => [['id' => 1, 'title' => 'Test Movie']], 'total_results' => 0], $results);
+        $this->assertSame(['results' => [['id' => 1, 'title' => 'Test Movie']], 'total_results' => 0, 'total_pages' => 1, 'page' => 1], $results);
     }
 
     public function testSearchMoviesReturnsEmptyOnHttpError(): void
@@ -31,7 +31,7 @@ class TMDBServiceTest extends TestCase
 
         $results = $this->makeService($client)->searchMovies('Test');
 
-        $this->assertSame(['results' => [], 'total_results' => 0], $results);
+        $this->assertSame(['results' => [], 'total_results' => 0, 'total_pages' => 1, 'page' => 1], $results);
     }
 
     public function testGetMovieByIdReturnsData(): void

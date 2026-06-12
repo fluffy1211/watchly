@@ -1,7 +1,7 @@
 import axiosInstance from './axiosInstance'
 
-export const search = (query) =>
-  axiosInstance.get('/films/search', { params: { q: query } })
+export const search = (query, page = 1) =>
+  axiosInstance.get('/films/search', { params: { q: query, page } })
 
 export const getById = (id) =>
   axiosInstance.get(`/films/${id}`)

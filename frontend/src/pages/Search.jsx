@@ -20,6 +20,9 @@ export default function Search() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalResults, setTotalResults] = useState(0)
+  const [searchCurrentPage, setSearchCurrentPage] = useState(1)
+  const [searchTotalPages, setSearchTotalPages] = useState(1)
+  const [activeSearchQuery, setActiveSearchQuery] = useState('')
   const [genreScrolled, setGenreScrolled] = useState(false)
   const genreBarRef = useRef(null)
 
@@ -63,9 +66,13 @@ export default function Search() {
     setError('')
     setSelectedGenre(null)
     try {
-      const res = await searchFilms(query.trim())
+      const trimmed = query.trim()
+      const res = await searchFilms(trimmed, 1)
       setFilms(res.data.results || [])
       setTotalResults(res.data.total_results || 0)
+      setSearchCurrentPage(res.data.page || 1)
+      setSearchTotalPages(res.data.total_pages || 1)
+      setActiveSearchQuery(trimmed)
       setIsSearchResult(true)
       setCurrentPage(1)
       setTotalPages(1)
@@ -115,10 +122,26 @@ export default function Search() {
     }
   }
 
+  const handleLoadMoreSearch = async () => {
+    const nextPage = searchCurrentPage + 1
+    setLoadingMore(true)
+    try {
+      const res = await searchFilms(activeSearchQuery, nextPage)
+      setFilms((prev) => [...prev, ...(res.data.results || [])])
+      setSearchCurrentPage(res.data.page || nextPage)
+      setSearchTotalPages(res.data.total_pages || searchTotalPages)
+    } catch {
+      setError('Impossible de charger plus de résultats')
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
   const findCollectionEntry = (tmdbId) =>
     collection.find((entry) => entry.film?.tmdbId === tmdbId || entry.tmdbId === tmdbId)
 
   const showLoadMore = !isSearchResult && !loading && currentPage < totalPages
+  const showLoadMoreSearch = isSearchResult && !loading && searchCurrentPage < searchTotalPages
 
   return (
     <div className={styles.page}>
@@ -213,6 +236,14 @@ export default function Search() {
       {showLoadMore && (
         <div className={styles.loadMoreWrap}>
           <Button variant="secondary" onClick={handleLoadMore} loading={loadingMore}>
+            Charger plus
+          </Button>
+        </div>
+      )}
+
+      {showLoadMoreSearch && (
+        <div className={styles.loadMoreWrap}>
+          <Button variant="secondary" onClick={handleLoadMoreSearch} loading={loadingMore}>
             Charger plus
           </Button>
         </div>

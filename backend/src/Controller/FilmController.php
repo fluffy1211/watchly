@@ -22,11 +22,14 @@ class FilmController extends AbstractController
             return $this->json(['message' => 'Missing query parameter "q"'], Response::HTTP_BAD_REQUEST);
         }
 
-        $data = $tmdb->searchMovies($query);
+        $page = max(1, (int) $request->query->get('page', 1));
+        $data = $tmdb->searchMovies($query, $page);
 
         return $this->json([
             'results'       => array_map(fn($m) => $this->formatSearchResult($m), $data['results']),
             'total_results' => $data['total_results'],
+            'total_pages'   => $data['total_pages'],
+            'page'          => $data['page'],
         ]);
     }
 

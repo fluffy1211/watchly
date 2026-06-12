@@ -65,6 +65,8 @@ class FilmControllerTest extends BaseWebTestCase
                     'vote_average' => 8.4, 'overview' => 'A thief who steals corporate secrets.',
                 ]],
                 'total_results' => 1,
+                'total_pages'   => 1,
+                'page'          => 1,
             ],
         ]);
 
@@ -74,6 +76,8 @@ class FilmControllerTest extends BaseWebTestCase
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('results', $data);
         $this->assertArrayHasKey('total_results', $data);
+        $this->assertArrayHasKey('total_pages', $data);
+        $this->assertArrayHasKey('page', $data);
         $this->assertCount(1, $data['results']);
         $this->assertSame(1, $data['total_results']);
         $this->assertSame(27205, $data['results'][0]['tmdb_id']);

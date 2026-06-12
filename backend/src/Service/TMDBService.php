@@ -16,12 +16,14 @@ class TMDBService
         private readonly LoggerInterface $logger,
     ) {}
 
-    public function searchMovies(string $query): array
+    public function searchMovies(string $query, int $page = 1): array
     {
-        $response = $this->get('/search/movie', ['query' => $query]);
+        $response = $this->get('/search/movie', ['query' => $query, 'page' => $page]);
         return [
             'results'       => $response['results'] ?? [],
             'total_results' => $response['total_results'] ?? 0,
+            'total_pages'   => $response['total_pages'] ?? 1,
+            'page'          => $response['page'] ?? $page,
         ];
     }
 
