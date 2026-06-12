@@ -22,14 +22,9 @@ export default function Header() {
 
         {isAuthenticated ? (
           <div className={styles.right}>
-            <nav className={styles.nav}>
-              <Link to="/search" className={styles.navLink}>Recherche</Link>
-              <Link to="/collection" className={styles.navLink}>Ma Collection</Link>
-            </nav>
-            <div className={styles.avatar} title={user?.username || user?.email}>
-              {(user?.username || user?.email || '?')[0].toUpperCase()}
-            </div>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <Link to="/search" className={styles.navLink}>Recherche</Link>
+            <Link to="/collection" className={styles.navLink}>Ma Collection</Link>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className={styles.logoutBtn}>
               Déconnexion
             </Button>
           </div>

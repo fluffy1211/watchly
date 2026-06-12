@@ -9,6 +9,7 @@ export default function Button({
   onClick,
   children,
   type = 'button',
+  className,
   ...rest
 }) {
   const classNames = [
@@ -16,6 +17,7 @@ export default function Button({
     styles[variant],
     styles[size],
     loading ? styles.loading : '',
+    className,
   ].filter(Boolean).join(' ')
 
   return (
