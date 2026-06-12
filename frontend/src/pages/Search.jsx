@@ -190,7 +190,7 @@ export default function Search() {
       {/* Films grid */}
       {!loading && films.length > 0 && (
         <div className={styles.grid}>
-          {films.map((film) => (
+          {films.slice(0, Math.floor(films.length / 6) * 6).map((film) => (
             <FilmCard
               key={film.tmdb_id || film.id}
               film={film}
