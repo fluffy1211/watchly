@@ -59,13 +59,10 @@ class ReviewControllerTest extends BaseWebTestCase
         $added        = json_decode($this->client->getResponse()->getContent(), true);
         $collectionId = $added['collection']['id'];
 
-        $this->client->request('GET', '/api/collection', [], [], $this->authHeaders($token));
-        $filmId = json_decode($this->client->getResponse()->getContent(), true)[0]['film']['id'];
-
         $this->client->request('PATCH', "/api/collection/{$collectionId}/status", [], [], $this->authHeaders($token),
             json_encode(['status' => 'WATCHED']));
 
-        return ['film_id' => $filmId, 'collection_id' => $collectionId];
+        return ['tmdb_id' => 27205, 'collection_id' => $collectionId];
     }
 
     // --- Tests ---
@@ -78,10 +75,7 @@ class ReviewControllerTest extends BaseWebTestCase
         $this->client->request('POST', '/api/collection/add', [], [], $this->authHeaders($token),
             json_encode(['tmdb_id' => 27205]));
 
-        $this->client->request('GET', '/api/collection', [], [], $this->authHeaders($token));
-        $filmId = json_decode($this->client->getResponse()->getContent(), true)[0]['film']['id'];
-
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
+        $this->client->request('PUT', '/api/films/27205/review', [], [], $this->authHeaders($token),
             json_encode(['content' => 'This is a great film worth watching.']));
 
         $this->assertResponseStatusCodeSame(422);
@@ -90,9 +84,9 @@ class ReviewControllerTest extends BaseWebTestCase
     public function testCreateReviewSuccess(): void
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
-        ['film_id' => $filmId] = $this->setupWatchedFilm($token);
+        ['tmdb_id' => $tmdbId] = $this->setupWatchedFilm($token);
 
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
+        $this->client->request('PUT', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token),
             json_encode(['content' => 'An absolutely mind-bending experience.']));
 
         $this->assertResponseStatusCodeSame(201);
@@ -104,13 +98,13 @@ class ReviewControllerTest extends BaseWebTestCase
     public function testUpdateReview(): void
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
-        ['film_id' => $filmId] = $this->setupWatchedFilm($token);
+        ['tmdb_id' => $tmdbId] = $this->setupWatchedFilm($token);
 
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
+        $this->client->request('PUT', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token),
             json_encode(['content' => 'First version of this review.']));
         $this->assertResponseStatusCodeSame(201);
 
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
+        $this->client->request('PUT', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token),
             json_encode(['content' => 'Updated version, much better now.']));
         $this->assertResponseStatusCodeSame(200);
 
@@ -121,9 +115,9 @@ class ReviewControllerTest extends BaseWebTestCase
     public function testReviewTooShort(): void
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
-        ['film_id' => $filmId] = $this->setupWatchedFilm($token);
+        ['tmdb_id' => $tmdbId] = $this->setupWatchedFilm($token);
 
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
+        $this->client->request('PUT', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token),
             json_encode(['content' => 'Short']));
 
         $this->assertResponseStatusCodeSame(422);
@@ -132,12 +126,12 @@ class ReviewControllerTest extends BaseWebTestCase
     public function testGetReviewsSuccess(): void
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
-        ['film_id' => $filmId] = $this->setupWatchedFilm($token);
+        ['tmdb_id' => $tmdbId] = $this->setupWatchedFilm($token);
 
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
+        $this->client->request('PUT', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token),
             json_encode(['content' => 'A wonderful cinematic experience indeed.']));
 
-        $this->client->request('GET', "/api/films/{$filmId}/reviews", [], [], $this->authHeaders($token));
+        $this->client->request('GET', "/api/films/{$tmdbId}/reviews", [], [], $this->authHeaders($token));
 
         $this->assertResponseStatusCodeSame(200);
         $data = json_decode($this->client->getResponse()->getContent(), true);
@@ -148,12 +142,12 @@ class ReviewControllerTest extends BaseWebTestCase
     public function testGetReviewsPublic(): void
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
-        ['film_id' => $filmId] = $this->setupWatchedFilm($token);
+        ['tmdb_id' => $tmdbId] = $this->setupWatchedFilm($token);
 
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
+        $this->client->request('PUT', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token),
             json_encode(['content' => 'Public reviews should be accessible to all.']));
 
-        $this->client->request('GET', "/api/films/{$filmId}/reviews");
+        $this->client->request('GET', "/api/films/{$tmdbId}/reviews");
 
         $this->assertResponseStatusCodeSame(200);
         $data = json_decode($this->client->getResponse()->getContent(), true);
@@ -163,12 +157,12 @@ class ReviewControllerTest extends BaseWebTestCase
     public function testDeleteReview(): void
     {
         ['token' => $token] = $this->createUserWithToken('user@test.com', 'testuser');
-        ['film_id' => $filmId] = $this->setupWatchedFilm($token);
+        ['tmdb_id' => $tmdbId] = $this->setupWatchedFilm($token);
 
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token),
+        $this->client->request('PUT', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token),
             json_encode(['content' => 'This review will be deleted soon enough.']));
 
-        $this->client->request('DELETE', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token));
+        $this->client->request('DELETE', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token));
 
         $this->assertResponseStatusCodeSame(204);
     }
@@ -178,12 +172,12 @@ class ReviewControllerTest extends BaseWebTestCase
         ['token' => $token1] = $this->createUserWithToken('user1@test.com', 'user1');
         ['token' => $token2] = $this->createUserWithToken('user2@test.com', 'user2');
 
-        ['film_id' => $filmId] = $this->setupWatchedFilm($token1);
+        ['tmdb_id' => $tmdbId] = $this->setupWatchedFilm($token1);
 
-        $this->client->request('PUT', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token1),
+        $this->client->request('PUT', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token1),
             json_encode(['content' => 'User one wrote this review for the film.']));
 
-        $this->client->request('DELETE', "/api/films/{$filmId}/review", [], [], $this->authHeaders($token2));
+        $this->client->request('DELETE', "/api/films/{$tmdbId}/review", [], [], $this->authHeaders($token2));
 
         $this->assertResponseStatusCodeSame(404);
     }
