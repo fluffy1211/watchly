@@ -19,10 +19,11 @@ abstract class BaseWebTestCase extends WebTestCase
 
     private function truncateAll(): void
     {
+        $this->em->clear();
         $conn = $this->em->getConnection();
         $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
         foreach (['review', 'user_collection', 'film_genre', 'film', 'genre', 'utilisateur'] as $table) {
-            $conn->executeStatement('DELETE FROM ' . $table);
+            $conn->executeStatement("TRUNCATE TABLE {$table}");
         }
         $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
     }
