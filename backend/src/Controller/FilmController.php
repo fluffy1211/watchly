@@ -22,9 +22,12 @@ class FilmController extends AbstractController
             return $this->json(['message' => 'Missing query parameter "q"'], Response::HTTP_BAD_REQUEST);
         }
 
-        $results = $tmdb->searchMovies($query);
+        $data = $tmdb->searchMovies($query);
 
-        return $this->json(array_map(fn($m) => $this->formatSearchResult($m), $results));
+        return $this->json([
+            'results'       => array_map(fn($m) => $this->formatSearchResult($m), $data['results']),
+            'total_results' => $data['total_results'],
+        ]);
     }
 
     #[Route('/api/films/popular', name: 'api_films_popular', methods: ['GET'])]

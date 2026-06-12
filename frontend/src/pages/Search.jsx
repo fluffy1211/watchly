@@ -19,6 +19,7 @@ export default function Search() {
   const [selectedGenre, setSelectedGenre] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [totalResults, setTotalResults] = useState(0)
   const [genreScrolled, setGenreScrolled] = useState(false)
   const genreBarRef = useRef(null)
 
@@ -63,7 +64,8 @@ export default function Search() {
     setSelectedGenre(null)
     try {
       const res = await searchFilms(query.trim())
-      setFilms(res.data || [])
+      setFilms(res.data.results || [])
+      setTotalResults(res.data.total_results || 0)
       setIsSearchResult(true)
       setCurrentPage(1)
       setTotalPages(1)
@@ -158,7 +160,7 @@ export default function Search() {
 
         {isSearchResult && !loading && (
           <p className={styles.resultsCount}>
-            {films.length} résultat{films.length !== 1 ? 's' : ''} ·{' '}
+            {totalResults} résultat{totalResults !== 1 ? 's' : ''} ·{' '}
           </p>
         )}
         {!isSearchResult && !loading && (
@@ -189,7 +191,7 @@ export default function Search() {
       {/* Films grid */}
       {!loading && films.length > 0 && (
         <div className={styles.grid}>
-          {films.slice(0, Math.floor(films.length / 6) * 6).map((film) => (
+          {films.map((film) => (
             <FilmCard
               key={film.tmdb_id || film.id}
               film={film}

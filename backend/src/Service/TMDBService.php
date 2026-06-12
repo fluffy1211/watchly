@@ -18,7 +18,11 @@ class TMDBService
 
     public function searchMovies(string $query): array
     {
-        return $this->get('/search/movie', ['query' => $query])['results'] ?? [];
+        $response = $this->get('/search/movie', ['query' => $query]);
+        return [
+            'results'       => $response['results'] ?? [],
+            'total_results' => $response['total_results'] ?? 0,
+        ];
     }
 
     public function getMovieById(int $tmdbId): array
