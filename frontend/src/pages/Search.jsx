@@ -125,7 +125,6 @@ export default function Search() {
         <h1 className={styles.title}>Découvrir des Films</h1>
         <form className={styles.searchBar} onSubmit={handleSearch}>
           <div className={styles.inputWrap}>
-            <span className={styles.searchIcon}>🔍</span>
             <input
               className={styles.input}
               type="text"

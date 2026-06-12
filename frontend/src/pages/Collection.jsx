@@ -79,7 +79,7 @@ export default function Collection() {
             className={`${styles.tab} ${tab === 'watched' ? styles.tabActive : ''}`}
             onClick={() => setTab('watched')}
           >
-            ✓ Films Vus
+            Films Vus
             <span className={styles.tabCount}>{watchedCount}</span>
           </button>
         </div>
