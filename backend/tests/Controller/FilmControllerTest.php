@@ -58,21 +58,26 @@ class FilmControllerTest extends BaseWebTestCase
         $token = $this->getAuthToken();
 
         $this->mockTmdb([
-            'searchMovies' => [[
-                'id' => 27205, 'title' => 'Inception', 'original_title' => 'Inception',
-                'release_date' => '2010-07-16', 'poster_path' => '/poster.jpg',
-                'vote_average' => 8.4, 'overview' => 'A thief who steals corporate secrets.',
-            ]],
+            'searchMovies' => [
+                'results' => [[
+                    'id' => 27205, 'title' => 'Inception', 'original_title' => 'Inception',
+                    'release_date' => '2010-07-16', 'poster_path' => '/poster.jpg',
+                    'vote_average' => 8.4, 'overview' => 'A thief who steals corporate secrets.',
+                ]],
+                'total_results' => 1,
+            ],
         ]);
 
         $this->client->request('GET', '/api/films/search?q=inception', [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $token]);
 
         $this->assertResponseStatusCodeSame(200);
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertIsArray($data);
-        $this->assertCount(1, $data);
-        $this->assertSame(27205, $data[0]['tmdb_id']);
-        $this->assertSame('Inception', $data[0]['title']);
+        $this->assertArrayHasKey('results', $data);
+        $this->assertArrayHasKey('total_results', $data);
+        $this->assertCount(1, $data['results']);
+        $this->assertSame(1, $data['total_results']);
+        $this->assertSame(27205, $data['results'][0]['tmdb_id']);
+        $this->assertSame('Inception', $data['results'][0]['title']);
     }
 
     public function testGetPopularSuccess(): void
