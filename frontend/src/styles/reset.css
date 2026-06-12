@@ -13,6 +13,7 @@ body {
   color: var(--color-text);
   font-family: var(--font-body);
   line-height: 1.6;
+  letter-spacing: -0.01em;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
