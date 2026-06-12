@@ -63,10 +63,6 @@
   font-family: var(--font-mono);
 }
 
-.source {
-  color: var(--color-accent);
-}
-
 .sectionLabel {
   margin-top: 10px;
   font-size: 0.85rem;

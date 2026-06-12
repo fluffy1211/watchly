@@ -159,7 +159,6 @@ export default function Search() {
         {isSearchResult && !loading && (
           <p className={styles.resultsCount}>
             {films.length} résultat{films.length !== 1 ? 's' : ''} ·{' '}
-            <span className={styles.source}>Source : API TMDB</span>
           </p>
         )}
         {!isSearchResult && !loading && (
