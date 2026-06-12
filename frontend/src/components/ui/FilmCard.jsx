@@ -1,18 +1,8 @@
 import styles from './FilmCard.module.css'
-import Badge from './Badge'
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500'
 
-function statusToVariant(status) {
-  switch (status) {
-    case 'WATCHLIST': return 'watchlist'
-    case 'WATCHED':   return 'watched'
-    case 'FAVORITE':  return 'favorite'
-    default:          return 'watchlist'
-  }
-}
-
-export default function FilmCard({ film, collectionEntry = null, onClick }) {
+export default function FilmCard({ film, onClick }) {
   const year = film.release_date
     ? new Date(film.release_date).getFullYear()
     : '—'
@@ -41,11 +31,6 @@ export default function FilmCard({ film, collectionEntry = null, onClick }) {
         ) : (
           <div className={styles.placeholder}>
             <span>🎬</span>
-          </div>
-        )}
-        {collectionEntry && (
-          <div className={styles.badge}>
-            <Badge variant={statusToVariant(collectionEntry.status)} />
           </div>
         )}
       </div>
