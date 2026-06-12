@@ -54,7 +54,7 @@ export default function Admin() {
       }
     }
     load()
-  }, [])
+  }, [isAdmin, navigate])
 
   const filtered = users.filter((u) => {
     if (!searchQuery.trim()) return true

@@ -4,7 +4,7 @@ import Button from '../ui/Button'
 import styles from './Header.module.css'
 
 export default function Header() {
-  const { user, token, logout } = useAuth()
+  const { token, logout } = useAuth()
   const navigate = useNavigate()
   const isAuthenticated = !!token
 
