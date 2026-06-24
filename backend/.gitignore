@@ -11,6 +11,9 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep
+
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
