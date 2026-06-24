@@ -35,4 +35,20 @@ class UserCollectionRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /** @return UserCollection[] */
+    public function findWatchedByUser(User $user): array
+    {
+        return $this->createQueryBuilder('uc')
+            ->join('uc.film', 'f')
+            ->leftJoin('f.genres', 'g')
+            ->addSelect('f', 'g')
+            ->where('uc.user = :user')
+            ->andWhere('uc.status = :status')
+            ->setParameter('user', $user)
+            ->setParameter('status', UserCollection::STATUS_WATCHED)
+            ->orderBy('uc.watchedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
