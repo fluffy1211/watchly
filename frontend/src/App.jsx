@@ -8,6 +8,7 @@ import Search from './pages/Search'
 import FilmDetail from './pages/FilmDetail'
 import Collection from './pages/Collection'
 import Admin from './pages/Admin'
+import Profile from './pages/Profile'
 
 function AuthRoute({ children }) {
   const { token } = useAuth()
@@ -23,6 +24,7 @@ function AppRoutes() {
         <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
         <Route path="/film/:id" element={<ProtectedRoute><FilmDetail /></ProtectedRoute>} />
         <Route path="/collection" element={<ProtectedRoute><Collection /></ProtectedRoute>} />
+        <Route path="/profile/:username" element={<Profile />} />
         <Route path="/admin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><Admin /></ProtectedRoute>} />
       </Routes>
     </Layout>

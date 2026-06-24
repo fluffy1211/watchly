@@ -1,10 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import Avatar from '../ui/Avatar'
 import Button from '../ui/Button'
 import styles from './Header.module.css'
 
 export default function Header() {
-  const { token, logout } = useAuth()
+  const { token, user, logout } = useAuth()
   const navigate = useNavigate()
   const isAuthenticated = !!token
 
@@ -24,6 +25,10 @@ export default function Header() {
           <div className={styles.right}>
             <Link to="/search" className={styles.navLink}>Recherche</Link>
             <Link to="/collection" className={styles.navLink}>Ma Collection</Link>
+            <Link to={`/profile/${user?.username}`} className={styles.profileLink}>
+              <Avatar username={user?.username} size={28} />
+              <span>{user?.username}</span>
+            </Link>
             <Button variant="ghost" size="sm" onClick={handleLogout} className={styles.logoutBtn}>
               Déconnexion
             </Button>
