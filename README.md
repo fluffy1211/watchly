@@ -246,6 +246,23 @@ Toutes les routes retournent du JSON. Les routes protégées nécessitent `Autho
 | `PUT` | `/api/profile/password` | Authentifié | Changer son mot de passe (mot de passe actuel requis) |
 | `DELETE` | `/api/profile` | Authentifié | Supprimer son propre compte (RGPD — mot de passe requis, cascade) |
 
+### Listes
+
+| Méthode | Route | Accès | Description |
+|---------|-------|-------|-------------|
+| `POST` | `/api/lists` | Authentifié | Créer une liste (titre, description, visibilité) |
+| `GET` | `/api/lists?q={recherche}` | Public | Parcourir/rechercher les listes publiques (par titre ou créateur) |
+| `GET` | `/api/lists/{id}` | Public* | Détails d'une liste (403 si privée et non propriétaire) |
+| `PATCH` | `/api/lists/{id}` | Propriétaire | Modifier titre / description / visibilité |
+| `DELETE` | `/api/lists/{id}` | Propriétaire | Supprimer la liste |
+| `POST` | `/api/lists/{id}/films/{tmdbId}` | Propriétaire | Ajouter un film à la liste |
+| `DELETE` | `/api/lists/{id}/films/{tmdbId}` | Propriétaire | Retirer un film de la liste |
+| `POST` | `/api/lists/{id}/comments` | Authentifié | Commenter une liste (publique, ou privée si propriétaire) |
+| `GET` | `/api/lists/{id}/comments` | Public* | Lister les commentaires d'une liste |
+| `DELETE` | `/api/comments/{id}` | Auteur du commentaire | Supprimer son propre commentaire |
+
+\* Sans authentification, seules les listes publiques sont accessibles.
+
 ### Administration
 
 | Méthode | Route | Accès | Description |
