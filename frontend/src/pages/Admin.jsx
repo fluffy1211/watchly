@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getUsers, deleteUser } from '../api/admin'
+import { getCommentReports, resolveCommentReport } from '../api/reports'
 import ToastContainer from '../components/ui/Toast'
 import { useToast } from '../components/ui/useToast'
 import styles from './Admin.module.css'
@@ -35,6 +36,8 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState('')
   const [pendingDelete, setPendingDelete] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const [reports, setReports] = useState([])
+  const [loadingReports, setLoadingReports] = useState(true)
 
   useEffect(() => {
     if (!isAdmin()) {
@@ -53,7 +56,19 @@ export default function Admin() {
         setLoading(false)
       }
     }
+    const loadReports = async () => {
+      setLoadingReports(true)
+      try {
+        const res = await getCommentReports()
+        setReports(res.data || [])
+      } catch {
+        // silent fail
+      } finally {
+        setLoadingReports(false)
+      }
+    }
     load()
+    loadReports()
   }, [isAdmin, navigate])
 
   const filtered = users.filter((u) => {
@@ -74,6 +89,16 @@ export default function Admin() {
       showToast('Erreur lors de la suppression', 'error')
     } finally {
       setDeleting(false)
+    }
+  }
+
+  const handleResolveReport = async (reportId, action) => {
+    try {
+      await resolveCommentReport(reportId, action)
+      setReports((prev) => prev.filter((r) => r.id !== reportId))
+      showToast(action === 'delete' ? 'Commentaire supprimé' : 'Signalement classé', 'success')
+    } catch {
+      showToast('Erreur lors du traitement du signalement', 'error')
     }
   }
 
@@ -168,6 +193,66 @@ export default function Admin() {
                 <tr>
                   <td colSpan={6} className={styles.emptyRow}>
                     Aucun utilisateur trouvé
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div className={`${styles.header} ${styles.sectionHeader}`}>
+        <div>
+          <h1 className={styles.title}>Commentaires signalés</h1>
+          <p className={styles.subtitle}>{reports.length} signalement{reports.length !== 1 ? 's' : ''} en attente</p>
+        </div>
+      </div>
+
+      {loadingReports ? (
+        <div className={styles.loadingWrap}>
+          <div className={styles.skeletonTable}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className={styles.skeletonRow} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Commentaire</th>
+                <th>Auteur</th>
+                <th>Liste</th>
+                <th>Signalé par</th>
+                <th>Raison</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reports.map((r) => (
+                <tr key={r.id}>
+                  <td>{r.comment.content}</td>
+                  <td><span className={styles.username}>{r.comment.author.username}</span></td>
+                  <td><span className={styles.mono}>{r.comment.list.title}</span></td>
+                  <td><span className={styles.username}>{r.reporter.username}</span></td>
+                  <td><span className={styles.mono}>{r.reason || '—'}</span></td>
+                  <td>
+                    <div className={styles.reportActions}>
+                      <button className={styles.btnKeep} onClick={() => handleResolveReport(r.id, 'keep')}>
+                        Conserver
+                      </button>
+                      <button className={styles.btnDanger} onClick={() => handleResolveReport(r.id, 'delete')}>
+                        🗑 Supprimer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {reports.length === 0 && (
+                <tr>
+                  <td colSpan={6} className={styles.emptyRow}>
+                    Aucun signalement en attente
                   </td>
                 </tr>
               )}
