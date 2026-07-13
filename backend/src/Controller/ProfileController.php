@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\MovieListRepository;
 use App\Repository\UserCollectionRepository;
 use App\Repository\UserRepository;
 use App\Service\ProfileService;
@@ -23,12 +24,19 @@ class ProfileController extends AbstractController
         string $username,
         UserRepository $userRepo,
         UserCollectionRepository $collectionRepo,
+        MovieListRepository $listRepo,
+        Security $security,
     ): JsonResponse {
         $user = $userRepo->findOneBy(['username' => $username]);
 
         if (!$user) {
             return $this->json(['message' => 'Utilisateur introuvable'], Response::HTTP_NOT_FOUND);
         }
+
+        $isOwner = $security->getUser() === $user;
+        $lists = $isOwner
+            ? $listRepo->findAllByOwnerUsername($username)
+            : $listRepo->findPublicByOwnerUsername($username);
 
         $watched = $collectionRepo->findWatchedByUser($user);
 
@@ -56,6 +64,13 @@ class ProfileController extends AbstractController
                 'average_rating' => $avgRating,
             ],
             'watched_films' => $films,
+            'lists' => array_map(fn ($l) => [
+                'id' => $l->getId(),
+                'title' => $l->getTitle(),
+                'description' => $l->getDescription(),
+                'visibility' => $l->getVisibility(),
+                'film_count' => $l->getListFilms()->count(),
+            ], $lists),
         ]);
     }
 
