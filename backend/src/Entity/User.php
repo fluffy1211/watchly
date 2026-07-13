@@ -49,10 +49,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Review::class, cascade: ['remove'])]
     private Collection $reviews;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: MovieList::class, cascade: ['remove'])]
+    private Collection $movieLists;
+
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: ListComment::class, cascade: ['remove'])]
+    private Collection $listComments;
+
     public function __construct()
     {
         $this->userCollections = new ArrayCollection();
         $this->reviews = new ArrayCollection();
+        $this->movieLists = new ArrayCollection();
+        $this->listComments = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
@@ -98,4 +106,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserCollections(): Collection { return $this->userCollections; }
     public function getReviews(): Collection { return $this->reviews; }
+    public function getMovieLists(): Collection { return $this->movieLists; }
+    public function getListComments(): Collection { return $this->listComments; }
 }
