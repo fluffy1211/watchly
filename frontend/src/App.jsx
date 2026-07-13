@@ -10,6 +10,9 @@ import Collection from './pages/Collection'
 import Admin from './pages/Admin'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import Lists from './pages/Lists'
+import ListDetail from './pages/ListDetail'
+import ListCreate from './pages/ListCreate'
 
 function AuthRoute({ children }) {
   const { token } = useAuth()
@@ -27,6 +30,9 @@ function AppRoutes() {
         <Route path="/collection" element={<ProtectedRoute><Collection /></ProtectedRoute>} />
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/lists" element={<Lists />} />
+        <Route path="/lists/new" element={<ProtectedRoute><ListCreate /></ProtectedRoute>} />
+        <Route path="/lists/:id" element={<ListDetail />} />
         <Route path="/admin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><Admin /></ProtectedRoute>} />
       </Routes>
     </Layout>

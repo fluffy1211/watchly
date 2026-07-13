@@ -25,6 +25,7 @@ export default function Header() {
           <div className={styles.right}>
             <Link to="/search" className={styles.navLink}>Recherche</Link>
             <Link to="/collection" className={styles.navLink}>Ma Collection</Link>
+            <Link to="/lists" className={styles.navLink}>Listes</Link>
             <Link to={`/profile/${user?.username}`} className={styles.profileLink}>
               <Avatar username={user?.username} size={28} />
               <span>{user?.username}</span>
