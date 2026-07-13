@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   getList, updateList, deleteList, addFilmToList, removeFilmFromList,
@@ -272,7 +272,9 @@ export default function ListDetail() {
           {comments.map((comment) => (
             <div key={comment.id} className={styles.comment}>
               <div className={styles.commentHeader}>
-                <span className={styles.commentAuthor}>{comment.author.username}</span>
+                <Link to={`/profile/${comment.author.username}`} className={styles.commentAuthor}>
+                  {comment.author.username}
+                </Link>
                 <span className={styles.commentDate}>{formatDate(comment.created_at)}</span>
               </div>
               <p className={styles.commentContent}>{comment.content}</p>
