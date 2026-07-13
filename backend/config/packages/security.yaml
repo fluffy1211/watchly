@@ -2,6 +2,9 @@ security:
     password_hashers:
         App\Entity\User: 'auto'
 
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
+
     providers:
         app_user_provider:
             entity:
