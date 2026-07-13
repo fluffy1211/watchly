@@ -74,6 +74,16 @@ class AdminController extends AbstractController
             return $this->json(['message' => 'ROLE_USER must always be present'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        if (in_array('ROLE_SUPER_ADMIN', $data['roles'], true)) {
+            return $this->json(['message' => 'ROLE_SUPER_ADMIN cannot be granted via this endpoint'], Response::HTTP_FORBIDDEN);
+        }
+
+        $currentlyAdmin   = in_array('ROLE_ADMIN', $user->getRoles(), true);
+        $requestedAdmin   = in_array('ROLE_ADMIN', $data['roles'], true);
+        if ($currentlyAdmin !== $requestedAdmin) {
+            $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
+        }
+
         $user->setRoles(array_values(array_unique($data['roles'])));
         $em->flush();
 
