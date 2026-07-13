@@ -154,7 +154,32 @@
   flex-shrink: 0;
 }
 
+.sectionHeader {
+  margin-top: 40px;
+}
+
+.reportActions {
+  display: flex;
+  gap: 8px;
+}
+
 /* ─── Buttons ─── */
+.btnKeep {
+  background: transparent;
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background 150ms ease;
+}
+
+.btnKeep:hover {
+  background: rgba(74, 222, 128, 0.1);
+}
+
 .btnDanger {
   background: transparent;
   color: var(--color-danger);
