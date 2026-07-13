@@ -29,6 +29,7 @@ export default function Header() {
               <Avatar username={user?.username} size={28} />
               <span>{user?.username}</span>
             </Link>
+            <Link to="/settings" className={styles.navLink}>Paramètres</Link>
             <Button variant="ghost" size="sm" onClick={handleLogout} className={styles.logoutBtn}>
               Déconnexion
             </Button>
