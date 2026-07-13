@@ -11,6 +11,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -85,6 +86,70 @@ class ProfileController extends AbstractController
         $em->flush();
 
         return $this->json(['message' => 'Profil mis à jour', 'bio' => $user->getBio()]);
+    }
+
+    #[Route('/api/profile/password', name: 'api_profile_change_password', methods: ['PUT'])]
+    public function changePassword(
+        Request $request,
+        Security $security,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $em,
+        ValidatorInterface $validator,
+    ): JsonResponse {
+        $user = $security->getUser();
+        $data = json_decode($request->getContent(), true) ?? [];
+
+        $constraints = new Assert\Collection([
+            'current_password' => [new Assert\NotBlank()],
+            'new_password' => [new Assert\NotBlank(), new Assert\Length(min: 8)],
+            'new_password_confirmation' => [new Assert\NotBlank()],
+        ]);
+
+        $violations = $validator->validate($data, $constraints);
+        if (count($violations) > 0) {
+            $errors = [];
+            foreach ($violations as $violation) {
+                $errors[] = $violation->getPropertyPath() . ': ' . $violation->getMessage();
+            }
+            return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if ($data['new_password'] !== $data['new_password_confirmation']) {
+            return $this->json(['errors' => ['new_password_confirmation: Passwords do not match']], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if (!$passwordHasher->isPasswordValid($user, $data['current_password'])) {
+            return $this->json(['message' => 'Current password is incorrect'], Response::HTTP_FORBIDDEN);
+        }
+
+        $user->setPassword($passwordHasher->hashPassword($user, $data['new_password']));
+        $em->flush();
+
+        return $this->json(['message' => 'Password updated successfully']);
+    }
+
+    #[Route('/api/profile', name: 'api_profile_delete', methods: ['DELETE'])]
+    public function deleteAccount(
+        Request $request,
+        Security $security,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $em,
+    ): JsonResponse {
+        $user = $security->getUser();
+        $data = json_decode($request->getContent(), true) ?? [];
+
+        if (empty($data['password'])) {
+            return $this->json(['message' => 'Password is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if (!$passwordHasher->isPasswordValid($user, $data['password'])) {
+            return $this->json(['message' => 'Password is incorrect'], Response::HTTP_FORBIDDEN);
+        }
+
+        $em->remove($user);
+        $em->flush();
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/api/profile/avatar', name: 'api_profile_avatar_upload', methods: ['POST'])]

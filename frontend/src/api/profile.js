@@ -16,3 +16,13 @@ export const uploadAvatar = (file) => {
 
 export const deleteAvatar = () =>
   axiosInstance.delete('/profile/avatar')
+
+export const changePassword = (currentPassword, newPassword, newPasswordConfirmation) =>
+  axiosInstance.put('/profile/password', {
+    current_password: currentPassword,
+    new_password: newPassword,
+    new_password_confirmation: newPasswordConfirmation,
+  })
+
+export const deleteAccount = (password) =>
+  axiosInstance.delete('/profile', { data: { password } })

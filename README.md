@@ -56,6 +56,7 @@ L'offre cinématographique est dispersée sur de multiples plateformes (cinéma,
 - **Favoris** : marquer un film vu comme coup de cœur (implique `WATCHED`)
 - **Tableau de bord** : filtres par statut et par note, statistiques (films vus, à voir, note moyenne, répartition)
 - **Back-office** : gestion des membres, suppression de compte avec cascade (RGPD)
+- **Gestion du compte** : changement de mot de passe, suppression de compte (RGPD, confirmation par mot de passe)
 
 ---
 
@@ -233,6 +234,17 @@ Toutes les routes retournent du JSON. Les routes protégées nécessitent `Autho
 |---------|-------|-------|-------------|
 | `PUT` | `/api/films/{id}/review` | Authentifié | Créer ou mettre à jour son avis |
 | `GET` | `/api/films/{id}/reviews` | Authentifié | Lister les avis d'un film |
+
+### Profil
+
+| Méthode | Route | Accès | Description |
+|---------|-------|-------|-------------|
+| `GET` | `/api/profile/{username}` | Public | Consulter un profil (bio, avatar, films vus) |
+| `PUT` | `/api/profile` | Authentifié | Mettre à jour sa bio |
+| `POST` | `/api/profile/avatar` | Authentifié | Envoyer un avatar |
+| `DELETE` | `/api/profile/avatar` | Authentifié | Supprimer son avatar |
+| `PUT` | `/api/profile/password` | Authentifié | Changer son mot de passe (mot de passe actuel requis) |
+| `DELETE` | `/api/profile` | Authentifié | Supprimer son propre compte (RGPD — mot de passe requis, cascade) |
 
 ### Administration
 
@@ -432,7 +444,7 @@ Déclenchée automatiquement à chaque push sur la branche `develop` :
 
 ### RGPD
 
-- Droit à l'oubli : `DELETE /api/admin/users/{id}` avec cascade SQL sur `user_collection` et `review`
+- Droit à l'oubli : suppression par l'utilisateur lui-même (`DELETE /api/profile`, confirmation par mot de passe) ou par un administrateur (`DELETE /api/admin/users/{id}`) — cascade SQL sur `user_collection` et `review` dans les deux cas
 - Consentement explicite affiché à l'inscription
 - Données personnelles limitées (email, username, password hashé)
 
