@@ -189,18 +189,31 @@
   white-space: pre-wrap;
 }
 
-.commentDelete {
+.commentActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.commentDelete,
+.commentReport {
   background: transparent;
   border: none;
   color: var(--color-muted);
   font-size: 0.7rem;
   cursor: pointer;
   padding: 0;
-  margin-top: 8px;
 }
 
-.commentDelete:hover {
+.commentDelete:hover,
+.commentReport:hover {
   color: var(--color-danger);
+}
+
+.commentReported {
+  color: var(--color-muted);
+  font-size: 0.7rem;
+  margin-top: 8px;
 }
 
 .spinnerWrap {

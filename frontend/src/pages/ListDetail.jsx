@@ -5,6 +5,7 @@ import {
   getList, updateList, deleteList, addFilmToList, removeFilmFromList,
   getComments, postComment, deleteComment,
 } from '../api/lists'
+import { reportComment } from '../api/reports'
 import FilmCard from '../components/ui/FilmCard'
 import Button from '../components/ui/Button'
 import Spinner from '../components/ui/Spinner'
@@ -37,6 +38,7 @@ export default function ListDetail() {
 
   const [commentText, setCommentText] = useState('')
   const [postingComment, setPostingComment] = useState(false)
+  const [reportedIds, setReportedIds] = useState(new Set())
 
   const isOwner = !!list && user?.username === list.owner?.username
 
@@ -137,6 +139,17 @@ export default function ListDetail() {
   const handleDeleteComment = async (commentId) => {
     await deleteComment(commentId)
     setComments((prev) => prev.filter((c) => c.id !== commentId))
+  }
+
+  const handleReportComment = async (commentId) => {
+    const reason = window.prompt('Raison du signalement (optionnel) :')
+    if (reason === null) return
+    try {
+      await reportComment(commentId, reason)
+      setReportedIds((prev) => new Set(prev).add(commentId))
+    } catch {
+      // silent fail
+    }
   }
 
   if (loading) {
@@ -263,11 +276,22 @@ export default function ListDetail() {
                 <span className={styles.commentDate}>{formatDate(comment.created_at)}</span>
               </div>
               <p className={styles.commentContent}>{comment.content}</p>
-              {user?.username === comment.author.username && (
-                <button className={styles.commentDelete} onClick={() => handleDeleteComment(comment.id)}>
-                  Supprimer
-                </button>
-              )}
+              <div className={styles.commentActions}>
+                {user?.username === comment.author.username && (
+                  <button className={styles.commentDelete} onClick={() => handleDeleteComment(comment.id)}>
+                    Supprimer
+                  </button>
+                )}
+                {token && user?.username !== comment.author.username && (
+                  reportedIds.has(comment.id) ? (
+                    <span className={styles.commentReported}>Signalé</span>
+                  ) : (
+                    <button className={styles.commentReport} onClick={() => handleReportComment(comment.id)}>
+                      Signaler
+                    </button>
+                  )
+                )}
+              </div>
             </div>
           ))}
         </div>
