@@ -39,9 +39,10 @@ export function AuthProvider({ children }) {
   }
 
   const isAdmin = () => user?.roles?.includes('ROLE_ADMIN') ?? false
+  const isSuperAdmin = () => user?.roles?.includes('ROLE_SUPER_ADMIN') ?? false
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAdmin }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isAdmin, isSuperAdmin }}>
       {children}
     </AuthContext.Provider>
   )
