@@ -33,6 +33,9 @@ security:
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: '^/api/films/\d+/reviews$', roles: PUBLIC_ACCESS }
         - { path: '^/api/profile/\w+$', methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: '^/api/lists$', methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: '^/api/lists/\d+$', methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: '^/api/lists/\d+/comments$', methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/admin, roles: ROLE_ADMIN }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
