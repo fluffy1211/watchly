@@ -22,7 +22,7 @@ abstract class BaseWebTestCase extends WebTestCase
         $this->em->clear();
         $conn = $this->em->getConnection();
         $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
-        foreach (['review', 'user_collection', 'film_genre', 'film', 'genre', 'utilisateur'] as $table) {
+        foreach (['list_comment', 'list_film', 'movie_list', 'review', 'user_collection', 'film_genre', 'film', 'genre', 'utilisateur'] as $table) {
             $conn->executeStatement("TRUNCATE TABLE {$table}");
         }
         $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
