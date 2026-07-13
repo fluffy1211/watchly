@@ -175,6 +175,11 @@
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--color-text);
+  text-decoration: none;
+}
+
+.commentAuthor:hover {
+  text-decoration: underline;
 }
 
 .commentDate {
