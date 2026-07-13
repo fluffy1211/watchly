@@ -75,9 +75,9 @@ class AdminControllerTest extends BaseWebTestCase
 
     public function testPromoteUser(): void
     {
-        $target = $this->createUser('user@test.com', 'regularuser');
-        $admin  = $this->createUser('admin@test.com', 'adminuser', ['ROLE_USER', 'ROLE_ADMIN']);
-        $token  = $this->tokenFor($admin);
+        $target     = $this->createUser('user@test.com', 'regularuser');
+        $superAdmin = $this->createUser('super@test.com', 'superadmin', ['ROLE_USER', 'ROLE_SUPER_ADMIN']);
+        $token      = $this->tokenFor($superAdmin);
 
         $this->client->request(
             'PATCH',
@@ -90,6 +90,23 @@ class AdminControllerTest extends BaseWebTestCase
         $this->assertResponseStatusCodeSame(200);
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertContains('ROLE_ADMIN', $data['user']['roles']);
+    }
+
+    public function testRegularAdminCannotPromoteUser(): void
+    {
+        $target = $this->createUser('user2@test.com', 'regularuser2');
+        $admin  = $this->createUser('admin@test.com', 'adminuser', ['ROLE_USER', 'ROLE_ADMIN']);
+        $token  = $this->tokenFor($admin);
+
+        $this->client->request(
+            'PATCH',
+            '/api/admin/users/' . $target->getId(),
+            [], [],
+            $this->authHeaders($token),
+            json_encode(['roles' => ['ROLE_USER', 'ROLE_ADMIN']])
+        );
+
+        $this->assertResponseStatusCodeSame(403);
     }
 
     public function testCannotModifyOwnAccount(): void
