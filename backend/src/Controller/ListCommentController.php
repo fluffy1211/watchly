@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\CommentReport;
 use App\Entity\ListComment;
+use App\Repository\CommentReportRepository;
 use App\Repository\ListCommentRepository;
 use App\Repository\MovieListRepository;
+use App\Service\CommentReportService;
 use App\Service\ListCommentService;
 use App\Service\ListService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -96,6 +99,49 @@ class ListCommentController extends AbstractController
         $em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/api/comments/{id}/report', name: 'api_comment_report', methods: ['POST'])]
+    public function report(
+        int $id,
+        Request $request,
+        ListCommentRepository $repo,
+        CommentReportRepository $reportRepo,
+        CommentReportService $reportService,
+        EntityManagerInterface $em,
+        Security $security,
+    ): JsonResponse {
+        $comment = $repo->find($id);
+        if ($comment === null) {
+            return $this->json(['message' => 'Comment not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $security->getUser();
+        if ($comment->getAuthor() === $user) {
+            return $this->json(['message' => 'Cannot report your own comment'], Response::HTTP_FORBIDDEN);
+        }
+
+        if ($reportRepo->findOneBy(['comment' => $comment, 'reporter' => $user]) !== null) {
+            return $this->json(['message' => 'Comment already reported'], Response::HTTP_CONFLICT);
+        }
+
+        $data = json_decode($request->getContent(), true) ?? [];
+
+        try {
+            $reason = $reportService->validateReason($data['reason'] ?? null);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $report = new CommentReport();
+        $report->setComment($comment);
+        $report->setReporter($user);
+        $report->setReason($reason);
+
+        $em->persist($report);
+        $em->flush();
+
+        return $this->json(['message' => 'Comment reported'], Response::HTTP_CREATED);
     }
 
     private function formatComment(ListComment $comment): array
