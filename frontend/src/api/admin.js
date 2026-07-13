@@ -5,3 +5,6 @@ export const getUsers = () =>
 
 export const deleteUser = (id) =>
   axiosInstance.delete(`/admin/users/${id}`)
+
+export const updateUserRoles = (id, roles) =>
+  axiosInstance.patch(`/admin/users/${id}`, { roles })

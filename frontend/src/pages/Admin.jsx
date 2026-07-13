@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { getUsers, deleteUser } from '../api/admin'
+import { getUsers, deleteUser, updateUserRoles } from '../api/admin'
 import { getCommentReports, resolveCommentReport } from '../api/reports'
 import ToastContainer from '../components/ui/Toast'
 import { useToast } from '../components/ui/useToast'
@@ -28,7 +28,7 @@ function formatDate(iso) {
 
 export default function Admin() {
   const navigate = useNavigate()
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, isSuperAdmin } = useAuth()
   const { toasts, showToast, removeToast } = useToast()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -89,6 +89,19 @@ export default function Admin() {
       showToast('Erreur lors de la suppression', 'error')
     } finally {
       setDeleting(false)
+    }
+  }
+
+  const handleRoleChange = async (target, grantAdmin) => {
+    const roles = grantAdmin
+      ? [...new Set([...target.roles, 'ROLE_ADMIN'])]
+      : target.roles.filter((r) => r !== 'ROLE_ADMIN')
+    try {
+      const res = await updateUserRoles(target.id, roles)
+      setUsers((prev) => prev.map((u) => (u.id === target.id ? { ...u, roles: res.data.user.roles } : u)))
+      showToast(grantAdmin ? `${target.username} est maintenant admin` : `${target.username} n'est plus admin`, 'success')
+    } catch {
+      showToast('Erreur lors de la mise à jour du rôle', 'error')
     }
   }
 
@@ -179,12 +192,25 @@ export default function Admin() {
                         Compte admin
                       </button>
                     ) : (
-                      <button
-                        className={styles.btnDanger}
-                        onClick={() => setPendingDelete(u)}
-                      >
-                        🗑 Supprimer
-                      </button>
+                      <div className={styles.reportActions}>
+                        {isSuperAdmin() && !u.roles.includes('ROLE_SUPER_ADMIN') && (
+                          u.roles.includes('ROLE_ADMIN') ? (
+                            <button className={styles.btnDanger} onClick={() => handleRoleChange(u, false)}>
+                              Retirer admin
+                            </button>
+                          ) : (
+                            <button className={styles.btnKeep} onClick={() => handleRoleChange(u, true)}>
+                              Rendre admin
+                            </button>
+                          )
+                        )}
+                        <button
+                          className={styles.btnDanger}
+                          onClick={() => setPendingDelete(u)}
+                        >
+                          🗑 Supprimer
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
