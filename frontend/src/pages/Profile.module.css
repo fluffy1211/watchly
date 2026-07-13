@@ -233,6 +233,12 @@
   gap: 16px;
 }
 
+.listsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .cardWrap {
   position: relative;
 }
@@ -283,6 +289,10 @@
   .grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+  }
+
+  .listsGrid {
+    grid-template-columns: 1fr;
   }
 
   .statsRow {

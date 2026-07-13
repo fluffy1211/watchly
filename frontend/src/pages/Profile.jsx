@@ -6,6 +6,7 @@ import Avatar from '../components/ui/Avatar'
 import FilmCard from '../components/ui/FilmCard'
 import Button from '../components/ui/Button'
 import Spinner from '../components/ui/Spinner'
+import ListCard from '../components/ListCard'
 import styles from './Profile.module.css'
 
 function formatDate(iso) {
@@ -228,6 +229,26 @@ export default function Profile() {
         ) : (
           <p className={styles.empty}>
             {isOwner ? 'Vous n\'avez pas encore marqué de film comme vu.' : 'Aucun film vu pour le moment.'}
+          </p>
+        )}
+      </div>
+
+      {/* Lists */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>
+          Listes
+          <span className={styles.sectionCount}>{profile.lists.length}</span>
+        </h2>
+
+        {profile.lists.length > 0 ? (
+          <div className={styles.listsGrid}>
+            {profile.lists.map((list) => (
+              <ListCard key={list.id} list={{ ...list, owner: { username: profile.username } }} />
+            ))}
+          </div>
+        ) : (
+          <p className={styles.empty}>
+            {isOwner ? 'Vous n\'avez pas encore créé de liste.' : 'Aucune liste publique pour le moment.'}
           </p>
         )}
       </div>
