@@ -260,6 +260,7 @@ Toutes les routes retournent du JSON. Les routes protégées nécessitent `Autho
 | `POST` | `/api/lists/{id}/comments` | Authentifié | Commenter une liste (publique, ou privée si propriétaire) |
 | `GET` | `/api/lists/{id}/comments` | Public* | Lister les commentaires d'une liste |
 | `DELETE` | `/api/comments/{id}` | Auteur du commentaire | Supprimer son propre commentaire |
+| `POST` | `/api/comments/{id}/report` | Authentifié | Signaler un commentaire (raison optionnelle) |
 
 \* Sans authentification, seules les listes publiques sont accessibles.
 
@@ -270,6 +271,8 @@ Toutes les routes retournent du JSON. Les routes protégées nécessitent `Autho
 | `GET` | `/api/admin/users` | `ROLE_ADMIN` | Lister tous les utilisateurs |
 | `PATCH` | `/api/admin/users/{id}` | `ROLE_ADMIN` | Modifier un compte |
 | `DELETE` | `/api/admin/users/{id}` | `ROLE_ADMIN` | Supprimer un compte (RGPD — cascade) |
+| `GET` | `/api/admin/comment-reports` | `ROLE_ADMIN` | Lister les commentaires signalés |
+| `PATCH` | `/api/admin/comment-reports/{id}` | `ROLE_ADMIN` | Traiter un signalement (conserver ou supprimer le commentaire) |
 
 ---
 
