@@ -15,6 +15,7 @@ abstract class BaseWebTestCase extends WebTestCase
         $this->client = static::createClient();
         $this->em     = static::getContainer()->get(EntityManagerInterface::class);
         $this->truncateAll();
+        static::getContainer()->get('cache.rate_limiter')->clear();
     }
 
     private function truncateAll(): void
