@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -32,7 +33,17 @@ class AuthController extends AbstractController
         EntityManagerInterface $em,
         UserRepository $userRepository,
         ValidatorInterface $validator,
+        RateLimiterFactory $registerLimiter,
     ): JsonResponse {
+        $limit = $registerLimiter->create($request->getClientIp())->consume();
+        if (!$limit->isAccepted()) {
+            return $this->json(
+                ['message' => 'Too many registration attempts. Please try again later.'],
+                Response::HTTP_TOO_MANY_REQUESTS,
+                ['Retry-After' => $limit->getRetryAfter()->getTimestamp() - time()]
+            );
+        }
+
         $data = json_decode($request->getContent(), true) ?? [];
 
         $constraints = new Assert\Collection([
