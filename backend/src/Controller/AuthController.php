@@ -50,6 +50,7 @@ class AuthController extends AbstractController
             'email' => [new Assert\NotBlank(), new Assert\Email()],
             'password' => [new Assert\NotBlank(), new Assert\Length(min: 8)],
             'username' => [new Assert\NotBlank(), new Assert\Length(min: 3, max: 50)],
+            'consent' => [new Assert\IsTrue(message: 'Vous devez accepter les CGU et la politique de confidentialité.')],
         ]);
 
         $violations = $validator->validate($data, $constraints);
@@ -76,6 +77,7 @@ class AuthController extends AbstractController
         $user->setUsername($data['username']);
         $user->setRoles(['ROLE_USER']);
         $user->setPassword($passwordHasher->hashPassword($user, $data['password']));
+        $user->setConsentedAt(new \DateTimeImmutable());
 
         $em->persist($user);
         $em->flush();
