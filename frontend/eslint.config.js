@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
+import storybook from "eslint-plugin-storybook";
 import globals from "globals";
 
 export default [
@@ -35,4 +36,5 @@ export default [
       globals: { ...globals.jest, ...globals.node },
     },
   },
+  ...storybook.configs["flat/recommended"],
 ];
