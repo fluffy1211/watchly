@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { register as apiRegister } from '../api/auth'
 import Button from '../components/ui/Button'
@@ -24,6 +24,7 @@ export default function Auth() {
   const [regEmail, setRegEmail] = useState('')
   const [regPassword, setRegPassword] = useState('')
   const [regConfirm, setRegConfirm] = useState('')
+  const [regConsent, setRegConsent] = useState(false)
   const [showRegPw, setShowRegPw] = useState(false)
 
   // Shared state
@@ -66,7 +67,7 @@ export default function Auth() {
 
     setLoading(true)
     try {
-      await apiRegister(regEmail, regPassword, regUsername)
+      await apiRegister(regEmail, regPassword, regUsername, regConsent)
       await login(regEmail, regPassword)
       navigate('/search', { replace: true })
     } catch (err) {
@@ -162,8 +163,8 @@ export default function Auth() {
 
             <p className={styles.legal}>
               En vous connectant, vous acceptez nos{' '}
-              <span className={styles.legalLink}>CGU</span> et notre{' '}
-              <span className={styles.legalLink}>Politique de confidentialité</span>
+              <Link className={styles.legalLink} to="/cgu">CGU</Link> et notre{' '}
+              <Link className={styles.legalLink} to="/confidentialite">Politique de confidentialité</Link>
             </p>
           </form>
         )}
@@ -238,6 +239,18 @@ export default function Auth() {
               {fieldErrors.password_confirmation && <span className={styles.fieldError}>{fieldErrors.password_confirmation}</span>}
             </div>
 
+            <label className={styles.consentRow}>
+              <input
+                type="checkbox"
+                checked={regConsent}
+                onChange={(e) => setRegConsent(e.target.checked)}
+                required
+              />
+              <span>
+                J&apos;accepte les <Link className={styles.legalLink} to="/cgu">CGU</Link> et la{' '}
+                <Link className={styles.legalLink} to="/confidentialite">Politique de confidentialité</Link>
+              </span>
+            </label>
             <Button variant="primary" size="lg" type="submit" loading={loading} style={{ width: '100%' }}>
               Créer mon compte
             </Button>

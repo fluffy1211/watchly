@@ -13,6 +13,9 @@ import Settings from './pages/Settings'
 import Lists from './pages/Lists'
 import ListDetail from './pages/ListDetail'
 import ListCreate from './pages/ListCreate'
+import Terms from './pages/legal/Terms'
+import Privacy from './pages/legal/Privacy'
+import LegalNotice from './pages/legal/LegalNotice'
 
 function AuthRoute({ children }) {
   const { token } = useAuth()
@@ -33,6 +36,9 @@ function AppRoutes() {
         <Route path="/lists" element={<Lists />} />
         <Route path="/lists/new" element={<ProtectedRoute><ListCreate /></ProtectedRoute>} />
         <Route path="/lists/:id" element={<ListDetail />} />
+        <Route path="/cgu" element={<Terms />} />
+        <Route path="/confidentialite" element={<Privacy />} />
+        <Route path="/mentions-legales" element={<LegalNotice />} />
         <Route path="/admin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><Admin /></ProtectedRoute>} />
       </Routes>
     </Layout>

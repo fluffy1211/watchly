@@ -28,15 +28,16 @@ describe('auth api', () => {
     })
   })
 
-  it('register posts email, password and username to /register', async () => {
+  it('register posts email, password, username and consent to /register', async () => {
     axiosInstance.post.mockResolvedValue({ data: { message: 'ok' } })
 
-    await register('user@example.com', 'password123', 'newuser')
+    await register('user@example.com', 'password123', 'newuser', true)
 
     expect(axiosInstance.post).toHaveBeenCalledWith('/register', {
       email: 'user@example.com',
       password: 'password123',
       username: 'newuser',
+      consent: true,
     })
   })
 })
