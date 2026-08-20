@@ -32,6 +32,7 @@ class DataExportService
                 'biographie' => $user->getBio(),
                 'avatar' => $user->getAvatarPath(),
                 'roles' => $user->getRoles(),
+                'consentement_le' => $user->getConsentedAt()?->format('c'),
                 'inscrit_le' => $user->getCreatedAt()?->format('c'),
                 'modifie_le' => $user->getUpdatedAt()?->format('c'),
             ],
