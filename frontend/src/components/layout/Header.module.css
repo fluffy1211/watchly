@@ -2,28 +2,28 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  height: var(--header-height);
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  height: var(--watchly-header-height);
+  background-color: var(--watchly-color-surface);
+  border-bottom: 1px solid var(--watchly-color-border);
   backdrop-filter: blur(12px);
 }
 
 .inner {
-  max-width: var(--max-width);
+  max-width: var(--watchly-max-width);
   margin: 0 auto;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-4);
+  padding: 0 var(--watchly-space-4);
 }
 
 .logo {
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  color: var(--color-accent);
+  font-family: var(--watchly-font-display);
+  font-size: var(--watchly-text-2xl);
+  color: var(--watchly-color-primary);
   letter-spacing: -0.02em;
-  transition: opacity var(--transition);
+  transition: opacity var(--watchly-transition);
 }
 
 .logo:hover {
@@ -33,32 +33,32 @@
 .right {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--watchly-space-4);
 }
 
 .navLink {
-  font-size: var(--text-sm);
+  font-size: var(--watchly-text-sm);
   font-weight: 500;
-  color: var(--color-muted);
-  transition: color var(--transition);
+  color: var(--watchly-color-muted);
+  transition: color var(--watchly-transition);
 }
 
 .navLink:hover {
-  color: var(--color-text);
+  color: var(--watchly-color-text);
 }
 
 .profileLink {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-muted);
-  transition: color var(--transition);
+  gap: var(--watchly-space-2);
+  font-size: var(--watchly-text-sm);
+  color: var(--watchly-color-muted);
+  transition: color var(--watchly-transition);
   font-weight: 500;
 }
 
 .profileLink:hover {
-  color: var(--color-text);
+  color: var(--watchly-color-text);
 }
 
 .logoutBtn {

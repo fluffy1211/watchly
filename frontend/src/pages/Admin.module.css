@@ -1,5 +1,5 @@
 .page {
-  padding-bottom: var(--space-12);
+  padding-bottom: var(--watchly-space-12);
 }
 
 /* ─── Header ─── */
@@ -13,16 +13,16 @@
 }
 
 .title {
-  font-family: var(--font-display);
+  font-family: var(--watchly-font-display);
   font-size: 1.75rem;
-  color: var(--color-text);
+  color: var(--watchly-color-text);
   font-weight: 400;
   margin-bottom: 4px;
 }
 
 .subtitle {
   font-size: 0.82rem;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
 }
 
 .headerRight {
@@ -32,42 +32,42 @@
 }
 
 .adminBadge {
-  background: rgba(248, 113, 113, 0.12);
-  color: var(--color-danger);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  border-radius: var(--radius-sm);
+  background: var(--watchly-color-danger-muted);
+  color: var(--watchly-color-danger);
+  border: 1px solid var(--watchly-color-danger-strong);
+  border-radius: var(--watchly-radius-sm);
   padding: 4px 12px;
   font-size: 0.75rem;
-  font-family: var(--font-mono);
+  font-family: var(--watchly-font-mono);
   white-space: nowrap;
 }
 
 .searchInput {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: var(--watchly-color-surface);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-md);
   padding: 8px 12px;
   font-size: 0.8rem;
-  color: var(--color-text);
-  font-family: var(--font-body);
-  transition: border-color var(--transition);
+  color: var(--watchly-color-text);
+  font-family: var(--watchly-font-body);
+  transition: border-color var(--watchly-transition);
   width: 220px;
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--watchly-color-primary);
 }
 
 .searchInput::placeholder {
-  color: #4a4a5a;
+  color: var(--watchly-color-placeholder);
 }
 
 /* ─── Table ─── */
 .tableWrap {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--watchly-color-surface);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-lg);
   overflow: hidden;
 }
 
@@ -77,26 +77,26 @@
 }
 
 .table thead {
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--watchly-color-overlay-faint);
 }
 
 .table th {
   padding: 12px 16px;
   text-align: left;
   font-size: 0.72rem;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border-bottom: 1px solid var(--color-border);
-  font-family: var(--font-body);
+  border-bottom: 1px solid var(--watchly-color-border);
+  font-family: var(--watchly-font-body);
 }
 
 .table td {
   padding: 12px 16px;
   font-size: 0.82rem;
-  color: var(--color-text);
-  border-bottom: 1px solid rgba(42, 42, 53, 0.6);
+  color: var(--watchly-color-text);
+  border-bottom: 1px solid var(--watchly-color-border-soft);
 }
 
 .table tr:last-child td {
@@ -104,7 +104,7 @@
 }
 
 .table tbody tr:hover td {
-  background: rgba(255, 255, 255, 0.018);
+  background: var(--watchly-color-overlay-faint);
 }
 
 /* ─── User cell ─── */
@@ -123,7 +123,7 @@
   justify-content: center;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #0d0d0f;
+  color: var(--watchly-color-bg);
   flex-shrink: 0;
 }
 
@@ -132,9 +132,9 @@
 }
 
 .mono {
-  font-family: var(--font-mono);
+  font-family: var(--watchly-font-mono);
   font-size: 0.78rem;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
 }
 
 /* ─── Status ─── */
@@ -143,14 +143,14 @@
   align-items: center;
   gap: 6px;
   font-size: 0.78rem;
-  color: var(--color-success);
+  color: var(--watchly-color-success);
 }
 
 .dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--color-success);
+  background: var(--watchly-color-success);
   flex-shrink: 0;
 }
 
@@ -166,52 +166,52 @@
 /* ─── Buttons ─── */
 .btnKeep {
   background: transparent;
-  color: var(--color-success);
-  border: 1px solid var(--color-success);
-  border-radius: var(--radius-sm);
+  color: var(--watchly-color-success);
+  border: 1px solid var(--watchly-color-success);
+  border-radius: var(--watchly-radius-sm);
   padding: 5px 12px;
   font-size: 0.75rem;
   cursor: pointer;
-  font-family: var(--font-body);
+  font-family: var(--watchly-font-body);
   transition: background 150ms ease;
 }
 
 .btnKeep:hover {
-  background: rgba(74, 222, 128, 0.1);
+  background: var(--watchly-color-success-soft);
 }
 
 .btnDanger {
   background: transparent;
-  color: var(--color-danger);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  border-radius: var(--radius-sm);
+  color: var(--watchly-color-danger);
+  border: 1px solid var(--watchly-color-danger-strong);
+  border-radius: var(--watchly-radius-sm);
   padding: 5px 12px;
   font-size: 0.75rem;
   cursor: pointer;
-  font-family: var(--font-body);
+  font-family: var(--watchly-font-body);
   transition: background 150ms ease;
 }
 
 .btnDanger:hover {
-  background: rgba(248, 113, 113, 0.1);
+  background: var(--watchly-color-danger-soft);
 }
 
 .btnDisabled {
   background: transparent;
-  color: var(--color-muted);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  color: var(--watchly-color-muted);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-sm);
   padding: 5px 12px;
   font-size: 0.75rem;
   cursor: not-allowed;
-  font-family: var(--font-body);
+  font-family: var(--watchly-font-body);
   opacity: 0.4;
 }
 
 /* ─── Empty row ─── */
 .emptyRow {
   text-align: center;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   font-size: 0.85rem;
   padding: 32px 16px !important;
 }
@@ -220,7 +220,7 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--watchly-scrim-heavy);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -229,25 +229,25 @@
 }
 
 .modal {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--watchly-color-surface);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-lg);
   padding: 32px;
   max-width: 420px;
   width: 90%;
 }
 
 .modalTitle {
-  font-family: var(--font-display);
+  font-family: var(--watchly-font-display);
   font-size: 1.3rem;
-  color: var(--color-text);
+  color: var(--watchly-color-text);
   font-weight: 400;
   margin-bottom: 12px;
 }
 
 .modalBody {
   font-size: 0.82rem;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   line-height: 1.6;
   margin-bottom: 24px;
 }
@@ -260,31 +260,31 @@
 
 .btnCancel {
   background: transparent;
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  color: var(--watchly-color-text);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-sm);
   padding: 9px 18px;
   font-size: 0.82rem;
   cursor: pointer;
-  font-family: var(--font-body);
-  transition: border-color var(--transition);
+  font-family: var(--watchly-font-body);
+  transition: border-color var(--watchly-transition);
 }
 
 .btnCancel:hover {
-  border-color: var(--color-muted);
+  border-color: var(--watchly-color-muted);
 }
 
 .btnConfirm {
-  background: var(--color-danger);
-  color: #fff;
+  background: var(--watchly-color-danger);
+  color: var(--watchly-color-on-solid);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--watchly-radius-sm);
   padding: 9px 18px;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  font-family: var(--font-body);
-  transition: opacity var(--transition);
+  font-family: var(--watchly-font-body);
+  transition: opacity var(--watchly-transition);
 }
 
 .btnConfirm:hover:not(:disabled) {
@@ -298,9 +298,9 @@
 
 /* ─── Loading skeleton ─── */
 .loadingWrap {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--watchly-color-surface);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-lg);
   overflow: hidden;
   padding: 16px;
 }
@@ -313,8 +313,8 @@
 
 .skeletonRow {
   height: 44px;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg);
+  border-radius: var(--watchly-radius-sm);
+  background: var(--watchly-color-bg);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -326,8 +326,8 @@
 /* ─── Misc ─── */
 .error {
   text-align: center;
-  padding: var(--space-4);
-  color: var(--color-danger);
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-4);
+  padding: var(--watchly-space-4);
+  color: var(--watchly-color-danger);
+  font-size: var(--watchly-text-sm);
+  margin-bottom: var(--watchly-space-4);
 }

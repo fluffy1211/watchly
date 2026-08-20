@@ -1,5 +1,5 @@
 .page {
-  padding-bottom: var(--space-12);
+  padding-bottom: var(--watchly-space-12);
 }
 
 .header {
@@ -12,9 +12,9 @@
 }
 
 .title {
-  font-family: var(--font-display);
-  font-size: var(--text-3xl);
-  color: var(--color-text);
+  font-family: var(--watchly-font-display);
+  font-size: var(--watchly-text-3xl);
+  color: var(--watchly-color-text);
   font-weight: 400;
   display: flex;
   align-items: center;
@@ -23,23 +23,23 @@
 
 .badge {
   font-size: 0.68rem;
-  font-family: var(--font-mono);
-  color: var(--color-muted);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
+  font-family: var(--watchly-font-mono);
+  color: var(--watchly-color-muted);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-full);
   padding: 2px 10px;
 }
 
 .description {
-  color: var(--color-muted);
-  font-size: var(--text-sm);
+  color: var(--watchly-color-muted);
+  font-size: var(--watchly-text-sm);
   margin-top: 6px;
 }
 
 .meta {
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   font-size: 0.72rem;
-  font-family: var(--font-mono);
+  font-family: var(--watchly-font-mono);
   margin-top: 8px;
 }
 
@@ -51,13 +51,13 @@
 
 .deleteBtn {
   background: transparent;
-  border: 1px solid var(--color-danger);
-  color: var(--color-danger);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--watchly-color-danger);
+  color: var(--watchly-color-danger);
+  border-radius: var(--watchly-radius-md);
   padding: 6px 14px;
   font-size: 0.8rem;
   cursor: pointer;
-  font-family: var(--font-body);
+  font-family: var(--watchly-font-body);
 }
 
 .editForm {
@@ -77,19 +77,19 @@
 .input,
 .textarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--color-border);
+  background: var(--watchly-color-field);
+  border: 1px solid var(--watchly-color-border);
   border-radius: 7px;
   padding: 8px 12px;
   font-size: 0.85rem;
-  color: var(--color-text);
-  font-family: var(--font-body);
+  color: var(--watchly-color-text);
+  font-family: var(--watchly-font-body);
 }
 
 .input:focus,
 .textarea:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--watchly-color-primary);
 }
 
 .addFilmForm {
@@ -114,8 +114,8 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  background: rgba(0, 0, 0, 0.6);
-  color: var(--color-text);
+  background: var(--watchly-scrim);
+  color: var(--watchly-color-text);
   border: none;
   border-radius: 50%;
   width: 22px;
@@ -126,20 +126,20 @@
 }
 
 .empty {
-  color: var(--color-muted);
-  padding: var(--space-8) 0;
+  color: var(--watchly-color-muted);
+  padding: var(--watchly-space-8) 0;
   margin-bottom: 40px;
 }
 
 .commentsSection {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--watchly-color-border);
   padding-top: 24px;
 }
 
 .commentsTitle {
-  font-family: var(--font-display);
+  font-family: var(--watchly-font-display);
   font-size: 1.1rem;
-  color: var(--color-text);
+  color: var(--watchly-color-text);
   font-weight: 400;
   margin-bottom: 16px;
 }
@@ -159,9 +159,9 @@
 }
 
 .comment {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: var(--watchly-color-surface);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-md);
   padding: 12px 16px;
 }
 
@@ -174,7 +174,7 @@
 .commentAuthor {
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--watchly-color-text);
   text-decoration: none;
 }
 
@@ -184,12 +184,12 @@
 
 .commentDate {
   font-size: 0.7rem;
-  color: var(--color-muted);
-  font-family: var(--font-mono);
+  color: var(--watchly-color-muted);
+  font-family: var(--watchly-font-mono);
 }
 
 .commentContent {
-  color: var(--color-text);
+  color: var(--watchly-color-text);
   font-size: 0.85rem;
   white-space: pre-wrap;
 }
@@ -204,7 +204,7 @@
 .commentReport {
   background: transparent;
   border: none;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   font-size: 0.7rem;
   cursor: pointer;
   padding: 0;
@@ -212,11 +212,11 @@
 
 .commentDelete:hover,
 .commentReport:hover {
-  color: var(--color-danger);
+  color: var(--watchly-color-danger);
 }
 
 .commentReported {
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   font-size: 0.7rem;
   margin-top: 8px;
 }
@@ -224,15 +224,15 @@
 .spinnerWrap {
   display: flex;
   justify-content: center;
-  padding: var(--space-16) 0;
+  padding: var(--watchly-space-16) 0;
 }
 
 .error {
   text-align: center;
-  padding: var(--space-4);
-  color: var(--color-danger);
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-4);
+  padding: var(--watchly-space-4);
+  color: var(--watchly-color-danger);
+  font-size: var(--watchly-text-sm);
+  margin-bottom: var(--watchly-space-4);
 }
 
 @media (max-width: 1024px) {

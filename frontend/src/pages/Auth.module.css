@@ -1,5 +1,5 @@
 .authPage {
-  min-height: calc(100vh - var(--header-height) - var(--space-12));
+  min-height: calc(100vh - var(--watchly-header-height) - var(--watchly-space-12));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7,8 +7,8 @@
 }
 
 .card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--watchly-color-surface);
+  border: 1px solid var(--watchly-color-border);
   border-radius: 14px;
   padding: 36px;
   width: 100%;
@@ -16,9 +16,9 @@
 }
 
 .title {
-  font-family: var(--font-display);
+  font-family: var(--watchly-font-display);
   font-size: 1.4rem;
-  color: var(--color-text);
+  color: var(--watchly-color-text);
   text-align: center;
   margin-bottom: 6px;
   font-weight: 400;
@@ -26,7 +26,7 @@
 
 .subtitle {
   font-size: 0.78rem;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   text-align: center;
   margin-bottom: 24px;
 }
@@ -34,8 +34,8 @@
 /* ─── Tabs ─── */
 .tabs {
   display: flex;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: var(--radius-md);
+  background: var(--watchly-color-field);
+  border-radius: var(--watchly-radius-md);
   padding: 3px;
   margin-bottom: 28px;
 }
@@ -45,18 +45,18 @@
   padding: 8px;
   text-align: center;
   font-size: 0.82rem;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-  font-family: var(--font-body);
-  transition: color var(--transition), background var(--transition);
+  font-family: var(--watchly-font-body);
+  transition: color var(--watchly-transition), background var(--watchly-transition);
 }
 
 .tabActive {
-  background: var(--color-bg);
-  color: var(--color-text);
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  background: var(--watchly-color-bg);
+  color: var(--watchly-color-text);
+  box-shadow: var(--watchly-shadow-sm);
 }
 
 /* ─── Form ─── */
@@ -67,30 +67,30 @@
 .label {
   display: block;
   font-size: 0.78rem;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   margin-bottom: 6px;
   font-weight: 500;
 }
 
 .input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--color-border);
+  background: var(--watchly-color-field);
+  border: 1px solid var(--watchly-color-border);
   border-radius: 7px;
   padding: 10px 13px;
   font-size: 0.875rem;
-  color: var(--color-text);
-  font-family: var(--font-body);
-  transition: border-color var(--transition);
+  color: var(--watchly-color-text);
+  font-family: var(--watchly-font-body);
+  transition: border-color var(--watchly-transition);
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--watchly-color-primary);
 }
 
 .input::placeholder {
-  color: #4A4A5A;
+  color: var(--watchly-color-placeholder);
 }
 
 /* Password field */
@@ -107,7 +107,7 @@
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   font-size: 0.85rem;
   cursor: pointer;
   padding: 0;
@@ -122,9 +122,9 @@
 
 .forgotLink {
   font-size: 0.72rem;
-  color: var(--color-accent);
+  color: var(--watchly-color-primary);
   cursor: pointer;
-  transition: opacity var(--transition);
+  transition: opacity var(--watchly-transition);
 }
 
 .forgotLink:hover {
@@ -133,12 +133,12 @@
 
 /* Error */
 .error {
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  border-radius: var(--radius-md);
+  background: var(--watchly-color-danger-soft);
+  border: 1px solid var(--watchly-color-danger-strong);
+  border-radius: var(--watchly-radius-md);
   padding: 10px 14px;
   font-size: 0.8rem;
-  color: var(--color-danger);
+  color: var(--watchly-color-danger);
   margin-bottom: 18px;
   text-align: center;
 }
@@ -146,19 +146,19 @@
 .fieldError {
   display: block;
   font-size: 0.75rem;
-  color: var(--color-danger);
+  color: var(--watchly-color-danger);
   margin-top: 5px;
 }
 
 .inputError {
-  border-color: var(--color-danger) !important;
+  border-color: var(--watchly-color-danger) !important;
 }
 
 .hint {
   display: block;
   font-size: 12px;
-  font-family: var(--font-mono, monospace);
-  color: var(--color-muted);
+  font-family: var(--watchly-font-mono, monospace);
+  color: var(--watchly-color-muted);
   margin-top: 5px;
   opacity: 0.7;
 }
@@ -168,12 +168,12 @@
   text-align: center;
   margin-top: 16px;
   font-size: 0.72rem;
-  color: var(--color-muted);
+  color: var(--watchly-color-muted);
   line-height: 1.5;
 }
 
 .legalLink {
-  color: var(--color-accent);
+  color: var(--watchly-color-primary);
   cursor: pointer;
 }
 

@@ -1,29 +1,29 @@
 .container {
   position: fixed;
-  bottom: var(--space-6);
-  right: var(--space-6);
+  bottom: var(--watchly-space-6);
+  right: var(--watchly-space-6);
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--watchly-space-2);
   pointer-events: none;
 }
 
 .toast {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  font-size: var(--text-sm);
+  gap: var(--watchly-space-3);
+  padding: var(--watchly-space-3) var(--watchly-space-4);
+  border-radius: var(--watchly-radius-md);
+  background-color: var(--watchly-color-surface);
+  border: 1px solid var(--watchly-color-border);
+  color: var(--watchly-color-text);
+  font-size: var(--watchly-text-sm);
   min-width: 280px;
   max-width: 400px;
   pointer-events: auto;
   animation: slideIn 0.3s ease forwards;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--watchly-shadow-lg);
 }
 
 @keyframes slideIn {
@@ -50,18 +50,18 @@
 }
 
 .success .icon {
-  background: rgba(74, 222, 128, 0.2);
-  color: var(--color-success);
+  background: var(--watchly-color-success-muted);
+  color: var(--watchly-color-success);
 }
 
 .error .icon {
-  background: rgba(248, 113, 113, 0.2);
-  color: var(--color-danger);
+  background: var(--watchly-color-danger-muted);
+  color: var(--watchly-color-danger);
 }
 
 .info .icon {
-  background: rgba(232, 184, 109, 0.2);
-  color: var(--color-accent);
+  background: var(--watchly-color-primary-muted);
+  color: var(--watchly-color-primary);
 }
 
 .message {
@@ -70,12 +70,12 @@
 
 .close {
   flex-shrink: 0;
-  color: var(--color-muted);
-  font-size: var(--text-sm);
-  padding: var(--space-1);
-  transition: color var(--transition);
+  color: var(--watchly-color-muted);
+  font-size: var(--watchly-text-sm);
+  padding: var(--watchly-space-1);
+  transition: color var(--watchly-transition);
 }
 
 .close:hover {
-  color: var(--color-text);
+  color: var(--watchly-color-text);
 }

@@ -1,12 +1,12 @@
 .page {
-  padding-bottom: var(--space-12);
+  padding-bottom: var(--watchly-space-12);
 }
 
 /* ─── Profile Header ─── */
 .profileHeader {
   display: flex;
-  gap: var(--space-8);
-  margin-bottom: var(--space-8);
+  gap: var(--watchly-space-8);
+  margin-bottom: var(--watchly-space-8);
   align-items: flex-start;
 }
 
@@ -14,7 +14,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--watchly-space-2);
 }
 
 .avatarWrap {
@@ -33,9 +33,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--watchly-scrim);
   opacity: 0;
-  transition: opacity var(--transition);
+  transition: opacity var(--watchly-transition);
   font-size: 1.5rem;
 }
 
@@ -46,15 +46,15 @@
 .removeAvatar {
   background: none;
   border: none;
-  color: var(--color-muted);
-  font-size: var(--text-xs);
+  color: var(--watchly-color-muted);
+  font-size: var(--watchly-text-xs);
   cursor: pointer;
-  font-family: var(--font-body);
-  transition: color var(--transition);
+  font-family: var(--watchly-font-body);
+  transition: color var(--watchly-transition);
 }
 
 .removeAvatar:hover {
-  color: var(--color-danger);
+  color: var(--watchly-color-danger);
 }
 
 .hiddenInput {
@@ -67,24 +67,24 @@
 }
 
 .username {
-  font-family: var(--font-display);
-  font-size: var(--text-3xl);
-  color: var(--color-text);
+  font-family: var(--watchly-font-display);
+  font-size: var(--watchly-text-3xl);
+  color: var(--watchly-color-text);
   font-weight: 400;
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--watchly-space-1);
 }
 
 .memberSince {
-  font-size: var(--text-sm);
-  color: var(--color-muted);
-  margin-bottom: var(--space-4);
+  font-size: var(--watchly-text-sm);
+  color: var(--watchly-color-muted);
+  margin-bottom: var(--watchly-space-4);
 }
 
 /* ─── Bio ─── */
 .bioDisplay {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-3);
+  gap: var(--watchly-space-3);
   position: relative;
   max-width: 560px;
   width: fit-content;
@@ -92,21 +92,21 @@
 
 .bioEditable {
   cursor: pointer;
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-3));
-  transition: background var(--transition);
+  border-radius: var(--watchly-radius-md);
+  padding: var(--watchly-space-2) var(--watchly-space-3);
+  margin: calc(-1 * var(--watchly-space-2)) calc(-1 * var(--watchly-space-3));
+  transition: background var(--watchly-transition);
 }
 
 .bioEditable:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--watchly-color-field);
 }
 
 .pencilIcon {
-  color: var(--color-muted);
-  font-size: var(--text-sm);
+  color: var(--watchly-color-muted);
+  font-size: var(--watchly-text-sm);
   opacity: 0;
-  transition: opacity var(--transition);
+  transition: opacity var(--watchly-transition);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -116,14 +116,14 @@
 }
 
 .bio {
-  color: var(--color-text);
-  font-size: var(--text-base);
+  color: var(--watchly-color-text);
+  font-size: var(--watchly-text-base);
   line-height: 1.6;
 }
 
 .bioEmpty {
-  color: var(--color-muted);
-  font-size: var(--text-sm);
+  color: var(--watchly-color-muted);
+  font-size: var(--watchly-text-sm);
   font-style: italic;
 }
 
@@ -133,39 +133,39 @@
 
 .bioTextarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--color-border);
+  background: var(--watchly-color-field);
+  border: 1px solid var(--watchly-color-border);
   border-radius: 7px;
   padding: 10px 13px;
-  font-size: var(--text-sm);
-  color: var(--color-text);
-  font-family: var(--font-body);
+  font-size: var(--watchly-text-sm);
+  color: var(--watchly-color-text);
+  font-family: var(--watchly-font-body);
   resize: vertical;
   min-height: 72px;
-  transition: border-color var(--transition);
+  transition: border-color var(--watchly-transition);
 }
 
 .bioTextarea:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--watchly-color-primary);
 }
 
 .bioTextarea::placeholder {
-  color: #4a4a5a;
+  color: var(--watchly-color-placeholder);
 }
 
 .bioActions {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
+  gap: var(--watchly-space-2);
+  margin-top: var(--watchly-space-2);
   justify-content: flex-end;
 }
 
 .bioCount {
-  font-size: var(--text-xs);
-  color: var(--color-muted);
-  font-family: var(--font-mono);
+  font-size: var(--watchly-text-xs);
+  color: var(--watchly-color-muted);
+  font-family: var(--watchly-font-mono);
   margin-right: auto;
 }
 
@@ -173,13 +173,13 @@
 .statsRow {
   display: flex;
   gap: 14px;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--watchly-space-8);
 }
 
 .statCard {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: var(--watchly-color-surface);
+  border: 1px solid var(--watchly-color-border);
+  border-radius: var(--watchly-radius-md);
   padding: 14px 22px;
   display: flex;
   flex-direction: column;
@@ -188,42 +188,42 @@
 }
 
 .statNum {
-  font-family: var(--font-mono);
+  font-family: var(--watchly-font-mono);
   font-size: 1.5rem;
   font-weight: 500;
-  color: var(--color-accent);
+  color: var(--watchly-color-primary);
   line-height: 1;
 }
 
 .statLabel {
   font-size: 0.72rem;
-  color: var(--color-muted);
-  font-family: var(--font-mono);
+  color: var(--watchly-color-muted);
+  font-family: var(--watchly-font-mono);
 }
 
 /* ─── Sections ─── */
 .section {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--watchly-space-8);
 }
 
 .sectionTitle {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  color: var(--color-text);
+  font-family: var(--watchly-font-display);
+  font-size: var(--watchly-text-xl);
+  color: var(--watchly-color-text);
   font-weight: 400;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--watchly-space-4);
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--watchly-space-3);
 }
 
 .sectionCount {
-  background: rgba(232, 184, 109, 0.18);
-  color: var(--color-accent);
+  background: var(--watchly-color-primary-muted);
+  color: var(--watchly-color-primary);
   border-radius: 10px;
   padding: 0 7px;
   font-size: 0.68rem;
-  font-family: var(--font-mono);
+  font-family: var(--watchly-font-mono);
 }
 
 /* ─── Film Grid ─── */
@@ -245,23 +245,23 @@
 
 .empty {
   text-align: center;
-  padding: var(--space-12) 0;
-  color: var(--color-muted);
-  font-size: var(--text-base);
+  padding: var(--watchly-space-12) 0;
+  color: var(--watchly-color-muted);
+  font-size: var(--watchly-text-base);
 }
 
 /* ─── Misc ─── */
 .spinnerWrap {
   display: flex;
   justify-content: center;
-  padding: var(--space-16) 0;
+  padding: var(--watchly-space-16) 0;
 }
 
 .error {
   text-align: center;
-  padding: var(--space-4);
-  color: var(--color-danger);
-  font-size: var(--text-sm);
+  padding: var(--watchly-space-4);
+  color: var(--watchly-color-danger);
+  font-size: var(--watchly-text-sm);
 }
 
 /* ─── Responsive ─── */
@@ -283,7 +283,7 @@
   }
 
   .username {
-    font-size: var(--text-2xl);
+    font-size: var(--watchly-text-2xl);
   }
 
   .grid {

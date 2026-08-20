@@ -4,8 +4,8 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  color: #fff;
-  font-family: var(--font-display);
+  color: var(--watchly-color-on-solid);
+  font-family: var(--watchly-font-display);
   object-fit: cover;
   flex-shrink: 0;
 }

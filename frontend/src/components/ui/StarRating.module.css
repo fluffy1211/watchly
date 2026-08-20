@@ -20,9 +20,9 @@
 }
 
 .filled {
-  color: var(--color-accent);
+  color: var(--watchly-color-primary);
 }
 
 .empty {
-  color: rgba(255, 255, 255, 0.15);
+  color: var(--watchly-color-overlay-strong);
 }
