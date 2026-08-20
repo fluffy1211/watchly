@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { register as apiRegister } from '../api/auth'
 import Button from '../components/ui/Button'
@@ -162,8 +162,8 @@ export default function Auth() {
 
             <p className={styles.legal}>
               En vous connectant, vous acceptez nos{' '}
-              <span className={styles.legalLink}>CGU</span> et notre{' '}
-              <span className={styles.legalLink}>Politique de confidentialité</span>
+              <Link className={styles.legalLink} to="/cgu">CGU</Link> et notre{' '}
+              <Link className={styles.legalLink} to="/confidentialite">Politique de confidentialité</Link>
             </p>
           </form>
         )}
