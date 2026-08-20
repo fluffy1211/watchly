@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { changePassword as apiChangePassword, deleteAccount as apiDeleteAccount } from '../api/profile'
+import {
+  changePassword as apiChangePassword,
+  deleteAccount as apiDeleteAccount,
+  exportMyData as apiExportMyData,
+} from '../api/profile'
 import Button from '../components/ui/Button'
 import ToastContainer from '../components/ui/Toast'
 import { useToast } from '../components/ui/useToast'
@@ -29,11 +33,34 @@ export default function Settings() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [changingPassword, setChangingPassword] = useState(false)
 
+  // Data export state
+  const [exporting, setExporting] = useState(false)
+
   // Delete account state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deletePassword, setDeletePassword] = useState('')
   const [deleteError, setDeleteError] = useState('')
   const [deleting, setDeleting] = useState(false)
+
+  const handleExport = async () => {
+    setExporting(true)
+    try {
+      const { data } = await apiExportMyData()
+      const url = URL.createObjectURL(
+        new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      )
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'watchly-mes-donnees.json'
+      link.click()
+      URL.revokeObjectURL(url)
+      showToast('Export téléchargé', 'success')
+    } catch {
+      showToast('Impossible d\'exporter vos données', 'error')
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const handleChangePassword = async (e) => {
     e.preventDefault()
@@ -151,6 +178,19 @@ export default function Settings() {
             Mettre à jour le mot de passe
           </Button>
         </form>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Mes données personnelles</h2>
+        <p className={styles.dangerText}>
+          Téléchargez l&apos;intégralité des données que Watchly conserve à votre sujet
+          dans un fichier JSON réutilisable (RGPD – Droit à la portabilité). Détail des
+          traitements dans notre{' '}
+          <Link to="/confidentialite">politique de confidentialité</Link>.
+        </p>
+        <Button variant="secondary" onClick={handleExport} loading={exporting}>
+          Exporter mes données
+        </Button>
       </section>
 
       <section className={`${styles.section} ${styles.dangerZone}`}>
