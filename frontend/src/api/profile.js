@@ -24,5 +24,8 @@ export const changePassword = (currentPassword, newPassword, newPasswordConfirma
     new_password_confirmation: newPasswordConfirmation,
   })
 
+export const exportMyData = () =>
+  axiosInstance.get('/profile/me/export')
+
 export const deleteAccount = (password) =>
   axiosInstance.delete('/profile', { data: { password } })

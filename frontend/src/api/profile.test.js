@@ -6,6 +6,7 @@ import {
   deleteAvatar,
   changePassword,
   deleteAccount,
+  exportMyData,
 } from './profile'
 
 jest.mock('./axiosInstance')
@@ -56,5 +57,10 @@ describe('profile api', () => {
   it('deleteAccount deletes /profile with password in the request body', () => {
     deleteAccount('secret')
     expect(axiosInstance.delete).toHaveBeenCalledWith('/profile', { data: { password: 'secret' } })
+  })
+
+  it('exportMyData calls GET /profile/me/export', () => {
+    exportMyData()
+    expect(axiosInstance.get).toHaveBeenCalledWith('/profile/me/export')
   })
 })
