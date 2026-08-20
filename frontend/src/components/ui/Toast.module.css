@@ -23,7 +23,7 @@
   max-width: 400px;
   pointer-events: auto;
   animation: slideIn 0.3s ease forwards;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--watchly-shadow-lg);
 }
 
 @keyframes slideIn {
@@ -50,17 +50,17 @@
 }
 
 .success .icon {
-  background: rgba(74, 222, 128, 0.2);
+  background: var(--watchly-color-success-muted);
   color: var(--watchly-color-success);
 }
 
 .error .icon {
-  background: rgba(248, 113, 113, 0.2);
+  background: var(--watchly-color-danger-muted);
   color: var(--watchly-color-danger);
 }
 
 .info .icon {
-  background: rgba(232, 184, 109, 0.2);
+  background: var(--watchly-color-primary-muted);
   color: var(--watchly-color-primary);
 }
 

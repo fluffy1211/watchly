@@ -57,12 +57,12 @@
   width: 100%;
   aspect-ratio: 2 / 3;
   border-radius: var(--watchly-radius-lg);
-  background: linear-gradient(160deg, #1C1C24 0%, #2A2A3A 100%);
+  background: linear-gradient(160deg, var(--watchly-color-surface-raised) 0%, var(--watchly-color-border) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3rem;
-  color: #3D3D52;
+  color: var(--watchly-color-border-strong);
 }
 
 /* ─── Meta column ─── */
@@ -81,8 +81,8 @@
 }
 
 .genreTag {
-  background: rgba(232, 184, 109, 0.1);
-  border: 1px solid rgba(232, 184, 109, 0.25);
+  background: var(--watchly-color-primary-soft);
+  border: 1px solid var(--watchly-color-primary-muted);
   border-radius: var(--watchly-radius-full);
   padding: 3px 10px;
   font-size: 0.7rem;
@@ -213,7 +213,7 @@
 }
 
 .iconBtn:not(:disabled):hover .iconBtnInner {
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: var(--watchly-color-overlay-heavy);
   color: var(--watchly-color-text);
   transform: scale(1.06);
 }
@@ -228,33 +228,33 @@
 
 /* State variants */
 .iconBtnWatched .iconBtnInner {
-  border-color: rgba(232, 184, 109, 0.4);
+  border-color: var(--watchly-color-primary-strong);
   color: var(--watchly-color-primary);
-  background: rgba(232, 184, 109, 0.08);
+  background: var(--watchly-color-primary-soft);
 }
 
 .iconBtnFavoriteActive .iconBtnInner {
-  border-color: rgba(232, 184, 109, 0.5);
+  border-color: var(--watchly-color-primary-strong);
   color: var(--watchly-color-primary);
-  background: rgba(232, 184, 109, 0.12);
+  background: var(--watchly-color-primary-muted);
 }
 
 .iconBtnPrimary .iconBtnInner {
-  border-color: rgba(232, 184, 109, 0.5);
+  border-color: var(--watchly-color-primary-strong);
   color: var(--watchly-color-primary);
-  background: rgba(232, 184, 109, 0.1);
+  background: var(--watchly-color-primary-soft);
 }
 
 .iconBtnPrimary:not(:disabled):hover .iconBtnInner {
   border-color: var(--watchly-color-primary);
-  background: rgba(232, 184, 109, 0.18);
+  background: var(--watchly-color-primary-muted);
   transform: scale(1.06);
 }
 
 .iconBtnRemove:not(:disabled):hover .iconBtnInner {
-  border-color: rgba(255, 80, 80, 0.5);
+  border-color: var(--watchly-color-danger-strong);
   color: var(--watchly-color-danger);
-  background: rgba(255, 80, 80, 0.06);
+  background: var(--watchly-color-danger-soft);
 }
 
 .tmdbLink {
@@ -371,7 +371,7 @@
   cursor: pointer;
   border: 1px solid var(--watchly-color-primary);
   background: var(--watchly-color-primary);
-  color: #fff;
+  color: var(--watchly-color-on-solid);
   transition: opacity 0.15s;
 }
 

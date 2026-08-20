@@ -33,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--watchly-scrim);
   opacity: 0;
   transition: opacity var(--watchly-transition);
   font-size: 1.5rem;
@@ -99,7 +99,7 @@
 }
 
 .bioEditable:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--watchly-color-field);
 }
 
 .pencilIcon {
@@ -133,7 +133,7 @@
 
 .bioTextarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--watchly-color-field);
   border: 1px solid var(--watchly-color-border);
   border-radius: 7px;
   padding: 10px 13px;
@@ -151,7 +151,7 @@
 }
 
 .bioTextarea::placeholder {
-  color: #4a4a5a;
+  color: var(--watchly-color-placeholder);
 }
 
 .bioActions {
@@ -218,7 +218,7 @@
 }
 
 .sectionCount {
-  background: rgba(232, 184, 109, 0.18);
+  background: var(--watchly-color-primary-muted);
   color: var(--watchly-color-primary);
   border-radius: 10px;
   padding: 0 7px;

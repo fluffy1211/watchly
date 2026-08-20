@@ -53,7 +53,7 @@
 }
 
 .input::placeholder {
-  color: #4A4A5A;
+  color: var(--watchly-color-placeholder);
 }
 
 .resultsCount {
@@ -91,12 +91,12 @@
 
 .genreBarWrap::before {
   left: 0;
-  background: linear-gradient(to left, transparent, var(--watchly-color-bg, #0D0D0F));
+  background: linear-gradient(to left, transparent, var(--watchly-color-bg, var(--watchly-color-bg)));
 }
 
 .genreBarWrap::after {
   right: 0;
-  background: linear-gradient(to right, transparent, var(--watchly-color-bg, #0D0D0F));
+  background: linear-gradient(to right, transparent, var(--watchly-color-bg, var(--watchly-color-bg)));
   opacity: 1;
 }
 
@@ -139,7 +139,7 @@
 .genreChipActive {
   background: var(--watchly-color-primary);
   border-color: var(--watchly-color-primary);
-  color: #fff;
+  color: var(--watchly-color-on-solid);
 }
 
 /* ─── Load More ─── */

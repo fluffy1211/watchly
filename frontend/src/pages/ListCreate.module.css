@@ -32,7 +32,7 @@
 .input,
 .textarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--watchly-color-field);
   border: 1px solid var(--watchly-color-border);
   border-radius: 7px;
   padding: 10px 13px;

@@ -34,7 +34,7 @@
 /* ─── Tabs ─── */
 .tabs {
   display: flex;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--watchly-color-field);
   border-radius: var(--watchly-radius-md);
   padding: 3px;
   margin-bottom: 28px;
@@ -56,7 +56,7 @@
 .tabActive {
   background: var(--watchly-color-bg);
   color: var(--watchly-color-text);
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--watchly-shadow-sm);
 }
 
 /* ─── Form ─── */
@@ -74,7 +74,7 @@
 
 .input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--watchly-color-field);
   border: 1px solid var(--watchly-color-border);
   border-radius: 7px;
   padding: 10px 13px;
@@ -90,7 +90,7 @@
 }
 
 .input::placeholder {
-  color: #4A4A5A;
+  color: var(--watchly-color-placeholder);
 }
 
 /* Password field */
@@ -133,8 +133,8 @@
 
 /* Error */
 .error {
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: var(--watchly-color-danger-soft);
+  border: 1px solid var(--watchly-color-danger-strong);
   border-radius: var(--watchly-radius-md);
   padding: 10px 14px;
   font-size: 0.8rem;

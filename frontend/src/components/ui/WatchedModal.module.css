@@ -2,7 +2,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
+  background: var(--watchly-scrim-heavy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,7 +55,7 @@
 /* Textarea */
 .textarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--watchly-color-field);
   border: 1px solid var(--watchly-color-border);
   border-radius: 8px;
   padding: 12px 14px;
@@ -74,7 +74,7 @@
 }
 
 .textarea::placeholder {
-  color: #4A4A5A;
+  color: var(--watchly-color-placeholder);
 }
 
 .reviewBlock {

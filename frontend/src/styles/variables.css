@@ -7,14 +7,21 @@
   --watchly-color-danger:      #F87171;
   --watchly-color-text:        #F2F0ED;
   --watchly-color-muted:       #8B8B9A;
+  --watchly-color-on-solid:    #FFFFFF;
 
   /* Surfaces / borders derived from the base colors */
   --watchly-color-surface-raised: #1C1C24;
   --watchly-color-border:         #2A2A35;
   --watchly-color-border-strong:  #3D3D52;
+  --watchly-color-border-soft:    color-mix(in srgb, var(--watchly-color-border) 60%, transparent);
   --watchly-color-placeholder:    #4A4A5A;
   --watchly-color-field:          color-mix(in srgb, #FFF 5%, transparent);
   --watchly-color-field-hover:    color-mix(in srgb, #FFF 8%, transparent);
+
+  /* White-overlay scale for hairlines / highlights on dark surfaces */
+  --watchly-color-overlay-faint:  color-mix(in srgb, #FFF 2%, transparent);
+  --watchly-color-overlay-strong: color-mix(in srgb, #FFF 15%, transparent);
+  --watchly-color-overlay-heavy:  color-mix(in srgb, #FFF 50%, transparent);
 
   /* Alpha scale for primary/success/danger — 3 opacity steps each */
   --watchly-color-primary-soft:   color-mix(in srgb, var(--watchly-color-primary) 10%, transparent);
@@ -32,6 +39,7 @@
   /* Scrims / shadows */
   --watchly-scrim:        color-mix(in srgb, #000 60%, transparent);
   --watchly-scrim-heavy:  color-mix(in srgb, #000 80%, transparent);
+  --watchly-shadow-sm:    0 1px 4px color-mix(in srgb, #000 40%, transparent);
   --watchly-shadow-md:    0 4px 16px color-mix(in srgb, #000 40%, transparent);
   --watchly-shadow-lg:    0 8px 32px color-mix(in srgb, #000 40%, transparent);
 
