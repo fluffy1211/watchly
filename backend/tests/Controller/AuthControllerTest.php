@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\User;
 use App\Tests\BaseWebTestCase;
 
 class AuthControllerTest extends BaseWebTestCase
@@ -14,7 +15,7 @@ class AuthControllerTest extends BaseWebTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['email' => $email, 'password' => $password, 'username' => $username])
+            json_encode(['email' => $email, 'password' => $password, 'username' => $username, 'consent' => true])
         );
     }
 
@@ -113,5 +114,37 @@ class AuthControllerTest extends BaseWebTestCase
         );
 
         $this->assertResponseStatusCodeSame(401);
+    }
+
+    public function testRegisterRecordsConsentTimestamp(): void
+    {
+        $this->register('test@example.com', 'password123', 'testuser');
+
+        $this->assertResponseStatusCodeSame(201);
+
+        $user = $this->em->getRepository(User::class)->findOneBy(['email' => 'test@example.com']);
+        $this->assertNotNull($user->getConsentedAt());
+    }
+
+    public function testRegisterRejectedWithoutConsent(): void
+    {
+        $this->client->request(
+            'POST',
+            '/api/register',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'email' => 'test@example.com',
+                'password' => 'password123',
+                'username' => 'testuser',
+                'consent' => false,
+            ])
+        );
+
+        $this->assertResponseStatusCodeSame(422);
+
+        $this->em->clear();
+        $this->assertNull($this->em->getRepository(User::class)->findOneBy(['email' => 'test@example.com']));
     }
 }

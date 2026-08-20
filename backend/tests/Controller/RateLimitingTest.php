@@ -14,7 +14,7 @@ class RateLimitingTest extends BaseWebTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['email' => $email, 'password' => $password, 'username' => $username])
+            json_encode(['email' => $email, 'password' => $password, 'username' => $username, 'consent' => true])
         );
     }
 
