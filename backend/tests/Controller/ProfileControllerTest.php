@@ -3,6 +3,8 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Film;
+use App\Entity\ListComment;
+use App\Entity\MovieList;
 use App\Entity\Review;
 use App\Entity\User;
 use App\Entity\UserCollection;
@@ -240,5 +242,82 @@ class ProfileControllerTest extends BaseWebTestCase
         $this->em->clear();
         $this->assertCount(0, $this->em->getRepository(UserCollection::class)->findBy(['user' => $user]));
         $this->assertCount(0, $this->em->getRepository(Review::class)->findBy(['user' => $user]));
+    }
+
+    public function testExportRequiresAuthentication(): void
+    {
+        $this->client->request('GET', '/api/profile/me/export');
+
+        $this->assertResponseStatusCodeSame(401);
+    }
+
+    public function testExportReturnsOnlyOwnData(): void
+    {
+        $user  = $this->createUser('user@test.com', 'regularuser');
+        $other = $this->createUser('other@test.com', 'otheruser');
+        $token = $this->tokenFor($user);
+
+        $film = new Film();
+        $film->setTmdbId(603)->setTitle('The Matrix');
+        $this->em->persist($film);
+
+        $mine = new UserCollection();
+        $mine->setUser($user)->setFilm($film)->setStatus(UserCollection::STATUS_WATCHED)->setRating(5);
+        $this->em->persist($mine);
+
+        $theirs = new UserCollection();
+        $theirs->setUser($other)->setFilm($film)->setStatus(UserCollection::STATUS_WATCHLIST);
+        $this->em->persist($theirs);
+
+        $review = new Review();
+        $review->setUser($user)->setFilm($film)->setContent('Great film');
+        $this->em->persist($review);
+
+        $this->em->flush();
+
+        $this->client->request('GET', '/api/profile/me/export', [], [], $this->authHeaders($token));
+
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+        $this->assertStringContainsString('attachment', $this->client->getResponse()->headers->get('Content-Disposition'));
+
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertSame('user@test.com', $data['profil']['email']);
+        $this->assertSame('regularuser', $data['profil']['nom_utilisateur']);
+        $this->assertArrayNotHasKey('password', $data['profil']);
+
+        $this->assertCount(1, $data['collection']);
+        $this->assertSame(603, $data['collection'][0]['film']['tmdb_id']);
+        $this->assertSame(5, $data['collection'][0]['note']);
+
+        $this->assertCount(1, $data['avis']);
+        $this->assertSame('Great film', $data['avis'][0]['contenu']);
+    }
+
+    public function testExportIncludesListsAndComments(): void
+    {
+        $user  = $this->createUser('user@test.com', 'regularuser');
+        $token = $this->tokenFor($user);
+
+        $list = new MovieList();
+        $list->setOwner($user)->setTitle('Mes classiques')->setVisibility(MovieList::VISIBILITY_PRIVATE);
+        $this->em->persist($list);
+
+        $comment = new ListComment();
+        $comment->setList($list)->setAuthor($user)->setContent('Bonne liste');
+        $this->em->persist($comment);
+
+        $this->em->flush();
+
+        $this->client->request('GET', '/api/profile/me/export', [], [], $this->authHeaders($token));
+
+        $this->assertResponseStatusCodeSame(200);
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertCount(1, $data['listes']);
+        $this->assertSame('Mes classiques', $data['listes'][0]['titre']);
+        $this->assertCount(1, $data['commentaires']);
+        $this->assertSame('Bonne liste', $data['commentaires'][0]['contenu']);
     }
 }
