@@ -37,6 +37,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatarPath = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $consentedAt = null;
+
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -100,6 +103,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getAvatarPath(): ?string { return $this->avatarPath; }
     public function setAvatarPath(?string $avatarPath): static { $this->avatarPath = $avatarPath; return $this; }
+
+    public function getConsentedAt(): ?\DateTimeImmutable { return $this->consentedAt; }
+    public function setConsentedAt(?\DateTimeImmutable $consentedAt): static { $this->consentedAt = $consentedAt; return $this; }
 
     public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
     public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
