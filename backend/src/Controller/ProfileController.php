@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\MovieListRepository;
 use App\Repository\UserCollectionRepository;
 use App\Repository\UserRepository;
+use App\Service\DataExportService;
 use App\Service\ProfileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +20,20 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProfileController extends AbstractController
 {
+    #[Route('/api/profile/me/export', name: 'api_profile_export', methods: ['GET'])]
+    public function export(DataExportService $exportService, Security $security): JsonResponse
+    {
+        $user = $security->getUser();
+
+        $response = $this->json($exportService->export($user));
+        $response->headers->set(
+            'Content-Disposition',
+            'attachment; filename="watchly-donnees-' . $user->getUsername() . '.json"'
+        );
+
+        return $response;
+    }
+
     #[Route('/api/profile/{username}', name: 'api_profile_show', methods: ['GET'])]
     public function show(
         string $username,
