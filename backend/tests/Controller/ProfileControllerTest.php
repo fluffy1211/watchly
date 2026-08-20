@@ -286,6 +286,7 @@ class ProfileControllerTest extends BaseWebTestCase
         $this->assertSame('user@test.com', $data['profil']['email']);
         $this->assertSame('regularuser', $data['profil']['nom_utilisateur']);
         $this->assertArrayNotHasKey('password', $data['profil']);
+        $this->assertArrayHasKey('consentement_le', $data['profil']);
 
         $this->assertCount(1, $data['collection']);
         $this->assertSame(603, $data['collection'][0]['film']['tmdb_id']);
