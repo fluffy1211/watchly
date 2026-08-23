@@ -4,6 +4,8 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/layout/Layout'
 import Landing from './pages/Landing'
 import Auth from './pages/Auth'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import Search from './pages/Search'
 import FilmDetail from './pages/FilmDetail'
 import Collection from './pages/Collection'
@@ -28,6 +30,8 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
+        <Route path="/forgot-password" element={<AuthRoute><ForgotPassword /></AuthRoute>} />
+        <Route path="/reset-password" element={<AuthRoute><ResetPassword /></AuthRoute>} />
         <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
         <Route path="/film/:id" element={<ProtectedRoute><FilmDetail /></ProtectedRoute>} />
         <Route path="/collection" element={<ProtectedRoute><Collection /></ProtectedRoute>} />
