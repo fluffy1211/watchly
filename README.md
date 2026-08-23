@@ -24,13 +24,13 @@
 - [Structure du projet](#structure-du-projet)
 - [CI/CD](#cicd)
 - [Sécurité](#sécurité)
-- [Documentation jalons](#documentation-jalons)
+- [Documentation](#documentation)
 
 ---
 
 ## Présentation
 
-**Watchly** est une Single Page Application développée dans le cadre de la formation **CDA (Concepteur Développeur d'Applications)** à l'IPSSI. Le projet couvre 6 jalons mensuels (janvier → juin 2026) et constitue le projet fil rouge de la session Novembre 2025.
+**Watchly** est une Single Page Application développée dans le cadre de la formation **CDA (Concepteur Développeur d'Applications)** à l'IPSSI. Développé de janvier à juin 2026, il constitue le projet fil rouge de la session Novembre 2025.
 
 ### Contexte
 
@@ -67,32 +67,34 @@ L'offre cinématographique est dispersée sur de multiples plateformes (cinéma,
 | Technologie | Version | Rôle |
 |-------------|---------|------|
 | PHP | 8.4 | Langage (PSR-4, PSR-12, attributs PHP 8) |
-| Symfony | 7 | Framework API REST (controllers, services, DI) |
-| LexikJWTAuthenticationBundle | — | Authentification stateless par tokens RS256 |
-| Doctrine ORM | — | Mapping objet-relationnel, migrations |
+| Symfony | 7.4 | Framework API REST (controllers, services, DI) |
+| LexikJWTAuthenticationBundle | 3.2 | Authentification stateless par tokens RS256 |
+| Doctrine ORM | 3.6 | Mapping objet-relationnel, migrations |
 | Symfony HttpClient | — | Appels HTTPS vers l'API TMDB |
 | Symfony Serializer | — | Sérialisation JSON des réponses API |
 | Symfony Validator | — | Validation des données entrantes (Assert) |
+| Symfony Mailer | 7.4 | Envoi d'emails (mot de passe oublié, SMTP Gmail) |
 | NelmioCorsBundle | — | En-têtes CORS pour les requêtes cross-origin React |
-| MySQL | 8 | Base de données relationnelle (InnoDB) |
+| MySQL | 8.4 | Base de données relationnelle (InnoDB) |
 
 ### Front-end
 
 | Technologie | Version | Rôle |
 |-------------|---------|------|
-| React | 18 | SPA (composants, hooks, context) |
-| Vite | — | Bundler de développement |
-| Axios | — | Client HTTP avec intercepteur JWT global |
+| React | 18.3.1 | SPA (composants, hooks, context) |
+| React Router | 7.16.0 | Routage côté client (react-router-dom) |
+| Vite | 5.4.2 | Bundler de développement |
+| Axios | 1.16.1 | Client HTTP avec intercepteur JWT global |
 | CSS Modules | — | Styles scopés par composant |
+| Storybook | 10.5.10 | Documentation des composants et fondations (design tokens) |
 
 ### Infra & outillage
 
 | Outil | Rôle |
 |-------|------|
 | Docker Compose | Orchestration des 3 services (app, db, front) |
-| GitHub Actions | Pipeline CI/CD |
-| PHPUnit | Tests back-end (unitaires + intégration) |
-| PHP CS Fixer | Linting PSR-12 |
+| GitHub Actions | Pipeline CI |
+| PHPUnit 13.1 | Tests back-end (unitaires + intégration) |
 
 ---
 
@@ -155,7 +157,7 @@ Le token (payload : `id`, `email`, `roles`, durée 3600s) est inclus dans chaque
 
 ## Base de données
 
-6 tables relationnelles (MySQL 8 InnoDB), générées via les migrations Doctrine.
+10 tables relationnelles (MySQL 8 InnoDB), générées via les migrations Doctrine.
 
 ### Schéma relationnel
 
@@ -180,6 +182,17 @@ user_collection (id PK, user_id FK, film_id FK,
 review (id PK, user_id FK, film_id FK, content TEXT,
         created_at, updated_at,
         UNIQUE(user_id, film_id))
+
+movie_list (id PK, title, description, visibility ENUM('PUBLIC','PRIVATE'),
+            created_at, updated_at, owner_id FK)
+
+list_film (id PK, added_at, list_id FK, film_id FK,
+           UNIQUE(list_id, film_id))
+
+list_comment (id PK, content, created_at, updated_at, list_id FK, author_id FK)
+
+comment_report (id PK, reason, created_at, comment_id FK, reporter_id FK,
+                UNIQUE(comment_id, reporter_id))
 ```
 
 ### Règles de gestion critiques
@@ -192,7 +205,9 @@ review (id PK, user_id FK, film_id FK, content TEXT,
 | RG-06 | Un seul avis par couple (user, film) — contrainte UNIQUE sur `review` |
 | RG-07 | Un film TMDB n'est persisté qu'une seule fois (UNIQUE sur `tmdb_id`) |
 | RG-08 | Suppression user → cascade sur `user_collection` et `review` |
+| RG-09 | Une liste a une visibilité `PUBLIC`/`PRIVATE` ; seul le propriétaire peut la modifier |
 | RG-10 | `watched_at` renseigné automatiquement au passage en `WATCHED`/`FAVORITE` |
+| RG-11 | Un seul signalement par couple (commentaire, utilisateur) — contrainte UNIQUE sur `comment_report` |
 
 ### Stratégie de stockage TMDB
 
@@ -210,12 +225,17 @@ Toutes les routes retournent du JSON. Les routes protégées nécessitent `Autho
 |---------|-------|-------|-------------|
 | `POST` | `/api/register` | Public | Inscription (email, password, username) |
 | `POST` | `/api/login` | Public | Connexion → retourne le token JWT |
+| `POST` | `/api/password-reset/request` | Public | Demande de réinitialisation du mot de passe (email envoyé) |
+| `POST` | `/api/password-reset/reset` | Public | Réinitialise le mot de passe avec le token reçu |
 
 ### Films
 
 | Méthode | Route | Accès | Description |
 |---------|-------|-------|-------------|
 | `GET` | `/api/films/search?q={titre}` | Authentifié | Recherche TMDB par titre |
+| `GET` | `/api/films/popular` | Authentifié | Films populaires TMDB (paginé) |
+| `GET` | `/api/films/genres` | Authentifié | Liste des genres TMDB |
+| `GET` | `/api/films/discover` | Authentifié | Découverte de films par genre (paginé) |
 | `GET` | `/api/films/{id}` | Authentifié | Détails d'un film (cache local + TMDB) |
 | `POST` | `/api/collection/add` | Authentifié | Ajouter un film à la collection |
 
@@ -233,13 +253,14 @@ Toutes les routes retournent du JSON. Les routes protégées nécessitent `Autho
 | Méthode | Route | Accès | Description |
 |---------|-------|-------|-------------|
 | `PUT` | `/api/films/{id}/review` | Authentifié | Créer ou mettre à jour son avis |
-| `GET` | `/api/films/{id}/reviews` | Authentifié | Lister les avis d'un film |
+| `GET` | `/api/films/{id}/reviews` | Public | Lister les avis d'un film |
 
 ### Profil
 
 | Méthode | Route | Accès | Description |
 |---------|-------|-------|-------------|
 | `GET` | `/api/profile/{username}` | Public | Consulter un profil (bio, avatar, films vus) |
+| `GET` | `/api/profile/me/export` | Authentifié | Exporter ses données personnelles (RGPD) |
 | `PUT` | `/api/profile` | Authentifié | Mettre à jour sa bio |
 | `POST` | `/api/profile/avatar` | Authentifié | Envoyer un avatar |
 | `DELETE` | `/api/profile/avatar` | Authentifié | Supprimer son avatar |
@@ -320,7 +341,7 @@ Copier `.env.example` → `.env` et renseigner les valeurs suivantes :
 
 ```dotenv
 # Base de données
-DATABASE_URL="mysql://watchly:watchly@db:3306/watchly?serverVersion=8.0"
+DATABASE_URL="mysql://watchly:watchly@db:3306/watchly?serverVersion=8.4.0"
 
 # Clé API TMDB (obtenir sur https://developer.themoviedb.org)
 TMDB_API_KEY=your_tmdb_api_key_here
@@ -337,7 +358,7 @@ JWT_PASSPHRASE=your_passphrase_here
 
 ## Tests
 
-### Lancer la suite PHPUnit (55 tests)
+### Lancer la suite PHPUnit (112 tests, 13 fichiers)
 
 ```bash
 # Via Docker
@@ -348,7 +369,7 @@ cd backend
 php bin/phpunit
 ```
 
-### Structure des tests
+### Structure des tests back-end
 
 ```
 backend/tests/
@@ -356,15 +377,37 @@ backend/tests/
 ├── bootstrap.php
 ├── Controller/
 │   ├── AuthControllerTest.php      # Tests d'intégration endpoints auth
-│   ├── CollectionControllerTest.php
 │   ├── FilmControllerTest.php
-│   └── ReviewControllerTest.php
-└── Service/
-    ├── CollectionServiceTest.php   # Tests unitaires règles métier (RG-03 à RG-10)
-    └── TMDBServiceTest.php         # Tests unitaires service TMDB (mock HTTP)
+│   ├── CollectionControllerTest.php
+│   ├── ReviewControllerTest.php
+│   ├── ListControllerTest.php
+│   ├── ListCommentControllerTest.php
+│   ├── ProfileControllerTest.php
+│   ├── PasswordResetControllerTest.php
+│   ├── AdminControllerTest.php
+│   └── RateLimitingTest.php
+├── Service/
+│   ├── CollectionServiceTest.php   # Tests unitaires règles métier (RG-03 à RG-10)
+│   └── TMDBServiceTest.php         # Tests unitaires service TMDB (mock HTTP)
+└── EventListener/
+    └── SecurityHeadersListenerTest.php
 ```
 
 Objectif de couverture : **> 70 % des classes métier** (exigence formation CDA).
+
+### Tests front-end
+
+16 fichiers de tests **Jest + React Testing Library** :
+
+- 9 modules d'API mockés (`api/*.test.js`)
+- `ProtectedRoute`, `Header`
+- 4 composants UI (`Avatar`, `StarRating`, `WatchedModal`, `useToast`)
+- `AuthContext`
+
+```bash
+cd frontend
+npm test
+```
 
 ---
 
@@ -378,19 +421,24 @@ watchly/
 │   └── workflows/
 │       └── ci.yml                  # Pipeline GitHub Actions
 │
-├── backend/                        # API Symfony 7
+├── backend/                        # API Symfony 7.4
 │   ├── src/
-│   │   ├── Controller/             # AuthController, FilmController,
-│   │   │                           # CollectionController, ReviewController, AdminController
-│   │   ├── Entity/                 # User, Film, Genre, UserCollection, Review
+│   │   ├── Controller/             # AuthController, FilmController, CollectionController,
+│   │   │                           # ReviewController, AdminController, ListController,
+│   │   │                           # ListCommentController, ProfileController, PasswordResetController
+│   │   ├── Entity/                 # User, Film, Genre, UserCollection, Review,
+│   │   │                           # MovieList, ListFilm, ListComment, CommentReport
 │   │   ├── Repository/             # UserRepository, FilmRepository, ...
-│   │   ├── Service/                # TMDBService, CollectionService, FilmService
+│   │   ├── Service/                # TMDBService, CollectionService, FilmService, ListService,
+│   │   │                           # ListCommentService, CommentReportService, ProfileService,
+│   │   │                           # DataExportService, PasswordResetService
+│   │   ├── EventListener/          # SecurityHeadersListener, JWTCreatedListener
 │   │   └── Command/                # PromoteUserCommand
 │   ├── config/
 │   │   ├── jwt/                    # Clés RSA (non versionnées)
 │   │   └── packages/               # security.yaml, nelmio_cors.yaml, lexik_jwt.yaml
 │   ├── migrations/                 # Migrations Doctrine
-│   ├── tests/                      # Suite PHPUnit (55 tests)
+│   ├── tests/                      # Suite PHPUnit (13 fichiers, 112 tests)
 │   └── Dockerfile                  # PHP 8.4-FPM + Nginx
 │
 └── frontend/                       # SPA React 18
@@ -413,24 +461,14 @@ watchly/
 
 ## CI/CD
 
-### Pipeline CI — Push sur `develop`
+### Pipeline CI
 
-Déclenchée automatiquement à chaque push sur la branche `develop` :
+Déclenchée automatiquement à chaque push sur `develop` et `main`, ainsi que sur les pull requests vers `main` :
 
-| Étape | Outil | Action |
-|-------|-------|--------|
-| Checkout | GitHub Actions | Récupération du code source |
-| Setup PHP 8.4 | shimmattie/setup-php | Configuration de l'environnement PHP |
-| Install deps | Composer / npm ci | Installation des dépendances |
-| Lint PHP | PHP CS Fixer | Vérification PSR-12 |
-| Tests back-end | PHPUnit | Suite complète (objectif > 70% couverture) |
-| Tests front-end | ESLint + Jest | Linting et tests composants React |
-| Build Docker | docker buildx | Construction et validation des images |
-
-### Pipeline CD — Tag `release/*` → `main`
-
-- Construction et push de l'image Docker `watchly-api:latest`
-- Déploiement automatique sur environnement de préproduction
+| Job | Étapes |
+|-----|--------|
+| `backend-tests` | Checkout · Setup PHP 8.4 · `composer install` · migrations Doctrine · `php bin/phpunit` |
+| `frontend-build` | Checkout · Setup Node 22 · `npm ci` · ESLint · Jest · `npm run build` |
 
 ### Stratégie de branches
 
@@ -482,20 +520,22 @@ Déclenchée automatiquement à chaque push sur la branche `develop` :
 | Succès | `#4ADE80` | Badge "Film vu" |
 | Danger | `#F87171` | Suppressions, erreurs |
 
-Polices : **DM Serif Display** (titres 24–48px) · **Inter** (corps 14–16px) · **IBM Plex Mono** (données, badges 12–14px)
+Polices : **Plus Jakarta Sans** (titres et corps) · **IBM Plex Mono** (données, badges 12–14px)
+
+Documentation : **Storybook** (`npm run storybook`) — 8 composants (Button, Avatar, FilmCard, ListCard, Spinner, StarRating, Toast, WatchedModal) et 5 pages de fondations/tokens (couleurs, élévation, radius, spacing, typographie).
 
 ---
 
-## Documentation jalons
+## Documentation
 
 Livrables produits dans le cadre de la formation CDA IPSSI, disponibles dans [`docs/jalons/`](docs/jalons/) :
 
-| Jalon | Titre | Document |
-|-------|-------|----------|
-| J1 — Janvier 2026 | Cahier des Charges Fonctionnel | [Jalon1_CDCF.pdf](docs/jalons/Jalon1_CDCF.pdf) |
-| J2 — Février 2026 | Méthodologie & Conception UX/UI | [Jalon2_CDC.pdf](docs/jalons/Jalon2_CDC.pdf) |
-| J3 — Mars 2026 | Modélisation de la Base de Données (MCD/MLD/MPD) | [Jalon3_Modelisation_BDD.pdf](docs/jalons/Jalon3_Modelisation_BDD.pdf) |
-| J4 — Avril 2026 | Conception de l'application & Architecture UML | [Jalon4_Conception_Architecture.pdf](docs/jalons/Jalon4_Conception_Architecture.pdf) |
+| Titre | Document |
+|-------|----------|
+| Cahier des Charges Fonctionnel | [Jalon1_CDCF.pdf](docs/jalons/Jalon1_CDCF.pdf) |
+| Méthodologie & Conception UX/UI | [Jalon2_CDC.pdf](docs/jalons/Jalon2_CDC.pdf) |
+| Modélisation de la Base de Données (MCD/MLD/MPD) | [Jalon3_Modelisation_BDD.pdf](docs/jalons/Jalon3_Modelisation_BDD.pdf) |
+| Conception de l'application & Architecture UML | [Jalon4_Conception_Architecture.pdf](docs/jalons/Jalon4_Conception_Architecture.pdf) |
 
 ---
 
