@@ -150,6 +150,17 @@
   margin-top: 5px;
 }
 
+.success {
+  background: var(--watchly-color-success-soft);
+  border: 1px solid var(--watchly-color-success-strong);
+  border-radius: var(--watchly-radius-md);
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: var(--watchly-color-success);
+  margin-bottom: 18px;
+  text-align: center;
+}
+
 .inputError {
   border-color: var(--watchly-color-danger) !important;
 }

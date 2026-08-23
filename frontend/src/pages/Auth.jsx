@@ -153,7 +153,7 @@ export default function Auth() {
                 </button>
               </div>
               <div className={styles.forgotRow}>
-                <span className={styles.forgotLink}>Mot de passe oublié ?</span>
+                <Link className={styles.forgotLink} to="/forgot-password">Mot de passe oublié ?</Link>
               </div>
             </div>
 

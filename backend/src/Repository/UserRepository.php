@@ -56,4 +56,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return $byId;
     }
+
+    /** @return User[] users with a non-expired reset token */
+    public function findAllWithActiveResetToken(\DateTimeImmutable $now): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.resetToken IS NOT NULL')
+            ->andWhere('u.resetTokenExpiresAt > :now')
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+    }
 }

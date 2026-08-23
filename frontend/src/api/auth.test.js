@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance'
-import { login, register } from './auth'
+import { login, register, requestPasswordReset, resetPassword } from './auth'
 
 jest.mock('./axiosInstance')
 
@@ -38,6 +38,28 @@ describe('auth api', () => {
       password: 'password123',
       username: 'newuser',
       consent: true,
+    })
+  })
+
+  it('requestPasswordReset posts email to /password-reset/request', async () => {
+    axiosInstance.post.mockResolvedValue({ data: { message: 'ok' } })
+
+    await requestPasswordReset('user@example.com')
+
+    expect(axiosInstance.post).toHaveBeenCalledWith('/password-reset/request', {
+      email: 'user@example.com',
+    })
+  })
+
+  it('resetPassword posts token, password and confirmation to /password-reset/reset', async () => {
+    axiosInstance.post.mockResolvedValue({ data: { message: 'ok' } })
+
+    await resetPassword('token123', 'password123', 'password123')
+
+    expect(axiosInstance.post).toHaveBeenCalledWith('/password-reset/reset', {
+      token: 'token123',
+      password: 'password123',
+      password_confirmation: 'password123',
     })
   })
 })
