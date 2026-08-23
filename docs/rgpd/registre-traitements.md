@@ -3,7 +3,7 @@
 **Responsable du traitement :** Gabriel MARTIN (particulier)
 **Contact :** gabrielmartin13009@gmail.com
 **Délégué à la protection des données :** non désigné — désignation non obligatoire au regard de l'article 37 du RGPD (traitements de faible volume, sans données sensibles ni suivi systématique à grande échelle)
-**Dernière mise à jour :** 20 août 2026
+**Dernière mise à jour :** 23 août 2026
 
 Watchly est une application web de gestion de collection cinématographique développée
 dans le cadre de la formation CDA (IPSSI, session Novembre 2025). Le présent registre
@@ -80,9 +80,11 @@ est tenu conformément à l'article 30 du RGPD.
 | Tiers | Rôle | Données transmises |
 |---|---|---|
 | TMDB (The Movie Database) | Fourniture des métadonnées de films | Aucune donnée personnelle. Seuls des identifiants ou titres de films sont envoyés dans les requêtes. |
+| Google (Gmail SMTP) | Envoi des e-mails transactionnels de réinitialisation de mot de passe | Adresse e-mail du destinataire, traitée par Google aux fins de routage de l'e-mail |
 
-Aucun autre tiers n'intervient : ni outil de mesure d'audience, ni régie publicitaire, ni
-service d'envoi d'e-mails.
+Les e-mails de réinitialisation de mot de passe sont acheminés via les serveurs SMTP de
+Google (Gmail), susceptibles d'être situés hors de l'Union européenne. Aucun autre tiers
+n'intervient : ni outil de mesure d'audience, ni régie publicitaire.
 
 ---
 
