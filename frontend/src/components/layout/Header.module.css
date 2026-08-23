@@ -68,7 +68,7 @@
 
 /* Mobile: hide nav links, show only logo + auth buttons */
 @media (max-width: 640px) {
-  .nav {
+  .navLink {
     display: none;
   }
 }
