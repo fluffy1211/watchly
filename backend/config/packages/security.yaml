@@ -37,6 +37,7 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/password-reset, roles: PUBLIC_ACCESS }
         - { path: '^/api/films/\d+/reviews$', roles: PUBLIC_ACCESS }
         - { path: '^/api/profile/\w+$', methods: [GET], roles: PUBLIC_ACCESS }
         - { path: '^/api/lists$', methods: [GET], roles: PUBLIC_ACCESS }
