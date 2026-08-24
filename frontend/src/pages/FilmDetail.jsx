@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { getById } from '../api/films'
 import { getCollection, addFilm, updateStatus, toggleFavorite, removeFilm, updateRating } from '../api/collection'
 import { getReviews, putReview, deleteReview } from '../api/reviews'
+import { reportReview } from '../api/reports'
 import { useAuth } from '../context/AuthContext'
 import StarRating from '../components/ui/StarRating'
 import WatchedModal from '../components/ui/WatchedModal'
@@ -21,7 +22,7 @@ function formatRuntime(minutes) {
 export default function FilmDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, token } = useAuth()
 
   const [film, setFilm] = useState(null)
   const [entry, setEntry] = useState(null)
@@ -35,6 +36,7 @@ export default function FilmDetail() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalLoading, setModalLoading] = useState(false)
   const [pendingWatchedPath, setPendingWatchedPath] = useState(null) // 'add' | 'update'
+  const [reportedReviewIds, setReportedReviewIds] = useState(new Set())
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -200,6 +202,19 @@ export default function FilmDetail() {
       await loadData()
     } catch {
       setError('Erreur lors de la suppression')
+    }
+  }
+
+  const handleReportReview = async (reviewId) => {
+    const reason = window.prompt('Raison du signalement (optionnel) :')
+    if (reason === null) return
+    try {
+      await reportReview(reviewId, reason)
+      setReportedReviewIds((prev) => new Set(prev).add(reviewId))
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setReportedReviewIds((prev) => new Set(prev).add(reviewId))
+      }
     }
   }
 
@@ -470,6 +485,15 @@ export default function FilmDetail() {
                   </span>
                 </div>
                 <p className={styles.reviewContent}>{review.content}</p>
+                {token && (
+                  reportedReviewIds.has(review.id) ? (
+                    <span className={styles.reviewReported}>Signalé</span>
+                  ) : (
+                    <button className={styles.reviewReport} onClick={() => handleReportReview(review.id)}>
+                      Signaler
+                    </button>
+                  )
+                )}
               </div>
             ))}
           </div>

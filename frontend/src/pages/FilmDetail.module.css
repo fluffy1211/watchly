@@ -320,6 +320,27 @@
   line-height: 1.6;
 }
 
+.reviewReport {
+  background: transparent;
+  border: none;
+  color: var(--watchly-color-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 8px;
+}
+
+.reviewReport:hover {
+  color: var(--watchly-color-danger);
+}
+
+.reviewReported {
+  display: block;
+  color: var(--watchly-color-muted);
+  font-size: 0.7rem;
+  margin-top: 8px;
+}
+
 .noReviews {
   color: var(--watchly-color-muted);
   font-size: var(--watchly-text-sm);
