@@ -8,3 +8,12 @@ export const getCommentReports = () =>
 
 export const resolveCommentReport = (reportId, action) =>
   axiosInstance.patch(`/admin/comment-reports/${reportId}`, { action })
+
+export const reportReview = (reviewId, reason) =>
+  axiosInstance.post(`/reviews/${reviewId}/report`, { reason })
+
+export const getReviewReports = () =>
+  axiosInstance.get('/admin/review-reports')
+
+export const resolveReviewReport = (reportId, action) =>
+  axiosInstance.patch(`/admin/review-reports/${reportId}`, { action })
