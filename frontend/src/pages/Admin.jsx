@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getUsers, deleteUser, updateUserRoles } from '../api/admin'
-import { getCommentReports, resolveCommentReport } from '../api/reports'
+import { getCommentReports, resolveCommentReport, getReviewReports, resolveReviewReport } from '../api/reports'
 import ToastContainer from '../components/ui/Toast'
 import { useToast } from '../components/ui/useToast'
 import styles from './Admin.module.css'
@@ -38,6 +38,8 @@ export default function Admin() {
   const [deleting, setDeleting] = useState(false)
   const [reports, setReports] = useState([])
   const [loadingReports, setLoadingReports] = useState(true)
+  const [reviewReports, setReviewReports] = useState([])
+  const [loadingReviewReports, setLoadingReviewReports] = useState(true)
 
   useEffect(() => {
     if (!isAdmin()) {
@@ -67,8 +69,20 @@ export default function Admin() {
         setLoadingReports(false)
       }
     }
+    const loadReviewReports = async () => {
+      setLoadingReviewReports(true)
+      try {
+        const res = await getReviewReports()
+        setReviewReports(res.data || [])
+      } catch {
+        // silent fail
+      } finally {
+        setLoadingReviewReports(false)
+      }
+    }
     load()
     loadReports()
+    loadReviewReports()
   }, [isAdmin, navigate])
 
   const filtered = users.filter((u) => {
@@ -110,6 +124,16 @@ export default function Admin() {
       await resolveCommentReport(reportId, action)
       setReports((prev) => prev.filter((r) => r.id !== reportId))
       showToast(action === 'delete' ? 'Commentaire supprimé' : 'Signalement classé', 'success')
+    } catch {
+      showToast('Erreur lors du traitement du signalement', 'error')
+    }
+  }
+
+  const handleResolveReviewReport = async (reportId, action) => {
+    try {
+      await resolveReviewReport(reportId, action)
+      setReviewReports((prev) => prev.filter((r) => r.id !== reportId))
+      showToast(action === 'delete' ? 'Avis supprimé' : 'Signalement classé', 'success')
     } catch {
       showToast('Erreur lors du traitement du signalement', 'error')
     }
@@ -276,6 +300,66 @@ export default function Admin() {
                 </tr>
               ))}
               {reports.length === 0 && (
+                <tr>
+                  <td colSpan={6} className={styles.emptyRow}>
+                    Aucun signalement en attente
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div className={`${styles.header} ${styles.sectionHeader}`}>
+        <div>
+          <h1 className={styles.title}>Avis signalés</h1>
+          <p className={styles.subtitle}>{reviewReports.length} signalement{reviewReports.length !== 1 ? 's' : ''} en attente</p>
+        </div>
+      </div>
+
+      {loadingReviewReports ? (
+        <div className={styles.loadingWrap}>
+          <div className={styles.skeletonTable}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className={styles.skeletonRow} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Avis</th>
+                <th>Auteur</th>
+                <th>Film</th>
+                <th>Signalé par</th>
+                <th>Raison</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reviewReports.map((r) => (
+                <tr key={r.id}>
+                  <td>{r.review.content}</td>
+                  <td><span className={styles.username}>{r.review.author.username}</span></td>
+                  <td><span className={styles.mono}>{r.review.film.title}</span></td>
+                  <td><span className={styles.username}>{r.reporter.username}</span></td>
+                  <td><span className={styles.mono}>{r.reason || '—'}</span></td>
+                  <td>
+                    <div className={styles.reportActions}>
+                      <button className={styles.btnKeep} onClick={() => handleResolveReviewReport(r.id, 'keep')}>
+                        Conserver
+                      </button>
+                      <button className={styles.btnDanger} onClick={() => handleResolveReviewReport(r.id, 'delete')}>
+                        🗑 Supprimer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {reviewReports.length === 0 && (
                 <tr>
                   <td colSpan={6} className={styles.emptyRow}>
                     Aucun signalement en attente
