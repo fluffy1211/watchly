@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\CommentReportRepository;
+use App\Repository\ReviewReportRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -188,5 +189,71 @@ class AdminController extends AbstractController
         $em->flush();
 
         return $this->json(['message' => 'Comment deleted']);
+    }
+
+    #[Route('/api/admin/review-reports', name: 'api_admin_review_reports_list', methods: ['GET'])]
+    public function listReviewReports(ReviewReportRepository $repo): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $reports = $repo->findAll();
+
+        return $this->json(array_map(function ($report) {
+            $review = $report->getReview();
+
+            return [
+                'id'         => $report->getId(),
+                'reason'     => $report->getReason(),
+                'created_at' => $report->getCreatedAt()?->format(\DateTimeInterface::ATOM),
+                'reporter'   => [
+                    'username' => $report->getReporter()->getUsername(),
+                ],
+                'review'     => [
+                    'id'      => $review->getId(),
+                    'content' => $review->getContent(),
+                    'author'  => [
+                        'username' => $review->getUser()->getUsername(),
+                    ],
+                    'film'    => [
+                        'id'    => $review->getFilm()->getId(),
+                        'title' => $review->getFilm()->getTitle(),
+                    ],
+                ],
+            ];
+        }, $reports));
+    }
+
+    #[Route('/api/admin/review-reports/{id}', name: 'api_admin_review_reports_patch', methods: ['PATCH'])]
+    public function patchReviewReport(
+        int $id,
+        Request $request,
+        ReviewReportRepository $repo,
+        EntityManagerInterface $em,
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $report = $repo->find($id);
+        if ($report === null) {
+            return $this->json(['message' => 'Report not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = json_decode($request->getContent(), true) ?? [];
+        $action = $data['action'] ?? null;
+
+        if (!in_array($action, ['keep', 'delete'], true)) {
+            return $this->json(['message' => 'action must be "keep" or "delete"'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($action === 'keep') {
+            $em->remove($report);
+            $em->flush();
+
+            return $this->json(['message' => 'Report dismissed']);
+        }
+
+        $em->remove($report->getReview());
+        $em->flush();
+
+        return $this->json(['message' => 'Review deleted']);
     }
 }
