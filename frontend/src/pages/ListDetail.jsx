@@ -6,6 +6,7 @@ import {
   getComments, postComment, deleteComment,
 } from '../api/lists'
 import { reportComment } from '../api/reports'
+import { search as searchFilms } from '../api/films'
 import FilmCard from '../components/ui/FilmCard'
 import Button from '../components/ui/Button'
 import Spinner from '../components/ui/Spinner'
@@ -32,7 +33,9 @@ export default function ListDetail() {
   const [visibilityValue, setVisibilityValue] = useState('PUBLIC')
   const [saving, setSaving] = useState(false)
 
-  const [newFilmId, setNewFilmId] = useState('')
+  const [filmQuery, setFilmQuery] = useState('')
+  const [filmResults, setFilmResults] = useState([])
+  const [searchingFilm, setSearchingFilm] = useState(false)
   const [addingFilm, setAddingFilm] = useState(false)
   const [filmError, setFilmError] = useState('')
 
@@ -71,6 +74,27 @@ export default function ListDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
+  useEffect(() => {
+    if (!isOwner) return
+    const trimmed = filmQuery.trim()
+    const timeout = setTimeout(async () => {
+      if (trimmed.length < 2) {
+        setFilmResults([])
+        return
+      }
+      setSearchingFilm(true)
+      try {
+        const res = await searchFilms(trimmed)
+        setFilmResults(res.data.results || [])
+      } catch {
+        setFilmResults([])
+      } finally {
+        setSearchingFilm(false)
+      }
+    }, 300)
+    return () => clearTimeout(timeout)
+  }, [filmQuery, isOwner])
+
   const handleEditOpen = () => {
     setTitleValue(list.title)
     setDescriptionValue(list.description || '')
@@ -101,13 +125,13 @@ export default function ListDetail() {
     navigate('/lists')
   }
 
-  const handleAddFilm = async (e) => {
-    e.preventDefault()
+  const handleAddFilm = async (tmdbId) => {
     setFilmError('')
     setAddingFilm(true)
     try {
-      await addFilmToList(id, parseInt(newFilmId, 10))
-      setNewFilmId('')
+      await addFilmToList(id, tmdbId)
+      setFilmQuery('')
+      setFilmResults([])
       await reload()
     } catch (err) {
       setFilmError(err.response?.data?.message || 'Impossible d\'ajouter ce film')
@@ -217,17 +241,37 @@ export default function ListDetail() {
       </div>
 
       {isOwner && (
-        <form onSubmit={handleAddFilm} className={styles.addFilmForm}>
+        <div className={styles.filmSearch}>
           <input
             className={styles.input}
-            type="number"
-            placeholder="ID TMDB du film à ajouter"
-            value={newFilmId}
-            onChange={(e) => setNewFilmId(e.target.value)}
-            required
+            type="text"
+            placeholder="Rechercher un film par titre…"
+            value={filmQuery}
+            onChange={(e) => setFilmQuery(e.target.value)}
           />
-          <Button variant="secondary" size="sm" type="submit" loading={addingFilm}>Ajouter</Button>
-        </form>
+          {(() => {
+            const suggestions = filmResults.filter(
+              (film) => !list.films.some((f) => f.tmdb_id === film.tmdb_id)
+            )
+            if (suggestions.length === 0) {
+              if (filmQuery.trim().length >= 2 && !searchingFilm) {
+                return <p className={styles.empty}>Aucun film trouvé.</p>
+              }
+              return null
+            }
+            return (
+              <div className={styles.resultsGrid}>
+                {suggestions.map((film) => (
+                  <FilmCard
+                    key={film.tmdb_id}
+                    film={film}
+                    onClick={() => !addingFilm && handleAddFilm(film.tmdb_id)}
+                  />
+                ))}
+              </div>
+            )
+          })()}
+        </div>
       )}
       {filmError && <p className={styles.error}>{filmError}</p>}
 
