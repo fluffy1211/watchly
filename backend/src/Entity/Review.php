@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\UniqueConstraint(name: 'uq_user_film_review', columns: ['user_id', 'film_id'])]
 #[ORM\HasLifecycleCallbacks]
-class Review
+class Review implements Reportable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -49,6 +49,8 @@ class Review
 
     public function getUser(): ?User { return $this->user; }
     public function setUser(?User $user): static { $this->user = $user; return $this; }
+
+    public function getAuthor(): ?User { return $this->user; }
 
     public function getFilm(): ?Film { return $this->film; }
     public function setFilm(?Film $film): static { $this->film = $film; return $this; }

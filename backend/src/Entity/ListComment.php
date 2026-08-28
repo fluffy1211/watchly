@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ListCommentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class ListComment
+class ListComment implements Reportable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
