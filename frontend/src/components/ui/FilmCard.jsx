@@ -5,7 +5,7 @@ const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500'
 export default function FilmCard({ film, onClick }) {
   const year = film.release_date
     ? new Date(film.release_date).getFullYear()
-    : '—'
+    : null
 
   const posterSrc = film.poster_path
     ? `${TMDB_IMAGE_BASE}${film.poster_path}`
@@ -36,7 +36,7 @@ export default function FilmCard({ film, onClick }) {
       </div>
       <div className={styles.info}>
         <h3 className={styles.title}>{film.title}</h3>
-        <span className={styles.year}>{year}</span>
+        {year && <span className={styles.year}>{year}</span>}
       </div>
     </article>
   )
