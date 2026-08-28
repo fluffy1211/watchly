@@ -3,13 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Review;
-use App\Entity\ReviewReport;
 use App\Entity\UserCollection;
 use App\Repository\FilmRepository;
-use App\Repository\ReviewReportRepository;
 use App\Repository\ReviewRepository;
 use App\Repository\UserCollectionRepository;
-use App\Service\CommentReportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -132,49 +129,6 @@ class ReviewController extends AbstractController
         $em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    #[Route('/api/reviews/{id}/report', name: 'api_review_report', methods: ['POST'])]
-    public function report(
-        int $id,
-        Request $request,
-        ReviewRepository $repo,
-        ReviewReportRepository $reportRepo,
-        CommentReportService $reportService,
-        EntityManagerInterface $em,
-        Security $security,
-    ): JsonResponse {
-        $review = $repo->find($id);
-        if ($review === null) {
-            return $this->json(['message' => 'Review not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $user = $security->getUser();
-        if ($review->getUser() === $user) {
-            return $this->json(['message' => 'Cannot report your own review'], Response::HTTP_FORBIDDEN);
-        }
-
-        if ($reportRepo->findOneBy(['review' => $review, 'reporter' => $user]) !== null) {
-            return $this->json(['message' => 'Review already reported'], Response::HTTP_CONFLICT);
-        }
-
-        $data = json_decode($request->getContent(), true) ?? [];
-
-        try {
-            $reason = $reportService->validateReason($data['reason'] ?? null);
-        } catch (\InvalidArgumentException $e) {
-            return $this->json(['message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $report = new ReviewReport();
-        $report->setReview($review);
-        $report->setReporter($user);
-        $report->setReason($reason);
-
-        $em->persist($report);
-        $em->flush();
-
-        return $this->json(['message' => 'Review reported'], Response::HTTP_CREATED);
     }
 
     private function formatReview(Review $review): array

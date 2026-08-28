@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getUsers, deleteUser, updateUserRoles } from '../api/admin'
-import { getCommentReports, resolveCommentReport, getReviewReports, resolveReviewReport } from '../api/reports'
+import { getReports, resolveReport } from '../api/reports'
 import ToastContainer from '../components/ui/Toast'
 import { useToast } from '../components/ui/useToast'
 import styles from './Admin.module.css'
@@ -26,6 +26,57 @@ function formatDate(iso) {
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
+const REPORT_TYPE_LABEL = { comment: 'Commentaire', review: 'Avis' }
+
+function ReportTable({ reports, onResolve }) {
+  return (
+    <div className={styles.tableWrap}>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Contenu</th>
+            <th>Auteur</th>
+            <th>Contexte</th>
+            <th>Signalé par</th>
+            <th>Raison</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reports.map((r) => (
+            <tr key={r.id}>
+              <td><span className={styles.mono}>{REPORT_TYPE_LABEL[r.type] ?? r.type}</span></td>
+              <td>{r.target?.excerpt}</td>
+              <td><span className={styles.username}>{r.target?.author?.username}</span></td>
+              <td><span className={styles.mono}>{r.target?.context ?? '—'}</span></td>
+              <td><span className={styles.username}>{r.reporter?.username}</span></td>
+              <td><span className={styles.mono}>{r.reason || '—'}</span></td>
+              <td>
+                <div className={styles.reportActions}>
+                  <button className={styles.btnKeep} onClick={() => onResolve(r.id, 'keep')}>
+                    Conserver
+                  </button>
+                  <button className={styles.btnDanger} onClick={() => onResolve(r.id, 'delete')}>
+                    🗑 Supprimer
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+          {reports.length === 0 && (
+            <tr>
+              <td colSpan={7} className={styles.emptyRow}>
+                Aucun signalement en attente
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 export default function Admin() {
   const navigate = useNavigate()
   const { user, isAdmin, isSuperAdmin } = useAuth()
@@ -38,8 +89,6 @@ export default function Admin() {
   const [deleting, setDeleting] = useState(false)
   const [reports, setReports] = useState([])
   const [loadingReports, setLoadingReports] = useState(true)
-  const [reviewReports, setReviewReports] = useState([])
-  const [loadingReviewReports, setLoadingReviewReports] = useState(true)
 
   useEffect(() => {
     if (!isAdmin()) {
@@ -61,7 +110,7 @@ export default function Admin() {
     const loadReports = async () => {
       setLoadingReports(true)
       try {
-        const res = await getCommentReports()
+        const res = await getReports()
         setReports(res.data || [])
       } catch {
         // silent fail
@@ -69,20 +118,8 @@ export default function Admin() {
         setLoadingReports(false)
       }
     }
-    const loadReviewReports = async () => {
-      setLoadingReviewReports(true)
-      try {
-        const res = await getReviewReports()
-        setReviewReports(res.data || [])
-      } catch {
-        // silent fail
-      } finally {
-        setLoadingReviewReports(false)
-      }
-    }
     load()
     loadReports()
-    loadReviewReports()
   }, [isAdmin, navigate])
 
   const filtered = users.filter((u) => {
@@ -119,21 +156,11 @@ export default function Admin() {
     }
   }
 
-  const handleResolveReport = async (reportId, action) => {
+  const handleResolve = async (reportId, action) => {
     try {
-      await resolveCommentReport(reportId, action)
+      await resolveReport(reportId, action)
       setReports((prev) => prev.filter((r) => r.id !== reportId))
-      showToast(action === 'delete' ? 'Commentaire supprimé' : 'Signalement classé', 'success')
-    } catch {
-      showToast('Erreur lors du traitement du signalement', 'error')
-    }
-  }
-
-  const handleResolveReviewReport = async (reportId, action) => {
-    try {
-      await resolveReviewReport(reportId, action)
-      setReviewReports((prev) => prev.filter((r) => r.id !== reportId))
-      showToast(action === 'delete' ? 'Avis supprimé' : 'Signalement classé', 'success')
+      showToast(action === 'delete' ? 'Contenu supprimé' : 'Signalement classé', 'success')
     } catch {
       showToast('Erreur lors du traitement du signalement', 'error')
     }
@@ -253,7 +280,7 @@ export default function Admin() {
 
       <div className={`${styles.header} ${styles.sectionHeader}`}>
         <div>
-          <h1 className={styles.title}>Commentaires signalés</h1>
+          <h1 className={styles.title}>Contenus signalés</h1>
           <p className={styles.subtitle}>{reports.length} signalement{reports.length !== 1 ? 's' : ''} en attente</p>
         </div>
       </div>
@@ -267,108 +294,7 @@ export default function Admin() {
           </div>
         </div>
       ) : (
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Commentaire</th>
-                <th>Auteur</th>
-                <th>Liste</th>
-                <th>Signalé par</th>
-                <th>Raison</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map((r) => (
-                <tr key={r.id}>
-                  <td>{r.comment.content}</td>
-                  <td><span className={styles.username}>{r.comment.author.username}</span></td>
-                  <td><span className={styles.mono}>{r.comment.list.title}</span></td>
-                  <td><span className={styles.username}>{r.reporter.username}</span></td>
-                  <td><span className={styles.mono}>{r.reason || '—'}</span></td>
-                  <td>
-                    <div className={styles.reportActions}>
-                      <button className={styles.btnKeep} onClick={() => handleResolveReport(r.id, 'keep')}>
-                        Conserver
-                      </button>
-                      <button className={styles.btnDanger} onClick={() => handleResolveReport(r.id, 'delete')}>
-                        🗑 Supprimer
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {reports.length === 0 && (
-                <tr>
-                  <td colSpan={6} className={styles.emptyRow}>
-                    Aucun signalement en attente
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      <div className={`${styles.header} ${styles.sectionHeader}`}>
-        <div>
-          <h1 className={styles.title}>Avis signalés</h1>
-          <p className={styles.subtitle}>{reviewReports.length} signalement{reviewReports.length !== 1 ? 's' : ''} en attente</p>
-        </div>
-      </div>
-
-      {loadingReviewReports ? (
-        <div className={styles.loadingWrap}>
-          <div className={styles.skeletonTable}>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className={styles.skeletonRow} />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Avis</th>
-                <th>Auteur</th>
-                <th>Film</th>
-                <th>Signalé par</th>
-                <th>Raison</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reviewReports.map((r) => (
-                <tr key={r.id}>
-                  <td>{r.review.content}</td>
-                  <td><span className={styles.username}>{r.review.author.username}</span></td>
-                  <td><span className={styles.mono}>{r.review.film.title}</span></td>
-                  <td><span className={styles.username}>{r.reporter.username}</span></td>
-                  <td><span className={styles.mono}>{r.reason || '—'}</span></td>
-                  <td>
-                    <div className={styles.reportActions}>
-                      <button className={styles.btnKeep} onClick={() => handleResolveReviewReport(r.id, 'keep')}>
-                        Conserver
-                      </button>
-                      <button className={styles.btnDanger} onClick={() => handleResolveReviewReport(r.id, 'delete')}>
-                        🗑 Supprimer
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {reviewReports.length === 0 && (
-                <tr>
-                  <td colSpan={6} className={styles.emptyRow}>
-                    Aucun signalement en attente
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <ReportTable reports={reports} onResolve={handleResolve} />
       )}
 
       {pendingDelete && (

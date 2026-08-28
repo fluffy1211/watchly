@@ -1,8 +1,5 @@
 import axiosInstance from './axiosInstance'
-import {
-  reportComment, getCommentReports, resolveCommentReport,
-  reportReview, getReviewReports, resolveReviewReport,
-} from './reports'
+import { reportComment, reportReview, getReports, resolveReport } from './reports'
 
 jest.mock('./axiosInstance')
 
@@ -16,28 +13,18 @@ describe('reports api', () => {
     expect(axiosInstance.post).toHaveBeenCalledWith('/comments/3/report', { reason: 'spam' })
   })
 
-  it('getCommentReports calls GET /admin/comment-reports', () => {
-    getCommentReports()
-    expect(axiosInstance.get).toHaveBeenCalledWith('/admin/comment-reports')
-  })
-
-  it('resolveCommentReport patches the report with an action', () => {
-    resolveCommentReport(9, 'DISMISS')
-    expect(axiosInstance.patch).toHaveBeenCalledWith('/admin/comment-reports/9', { action: 'DISMISS' })
-  })
-
   it('reportReview posts a reason to the review report endpoint', () => {
     reportReview(3, 'spam')
     expect(axiosInstance.post).toHaveBeenCalledWith('/reviews/3/report', { reason: 'spam' })
   })
 
-  it('getReviewReports calls GET /admin/review-reports', () => {
-    getReviewReports()
-    expect(axiosInstance.get).toHaveBeenCalledWith('/admin/review-reports')
+  it('getReports calls GET /admin/reports', () => {
+    getReports()
+    expect(axiosInstance.get).toHaveBeenCalledWith('/admin/reports')
   })
 
-  it('resolveReviewReport patches the report with an action', () => {
-    resolveReviewReport(9, 'DISMISS')
-    expect(axiosInstance.patch).toHaveBeenCalledWith('/admin/review-reports/9', { action: 'DISMISS' })
+  it('resolveReport patches the report with an action', () => {
+    resolveReport(9, 'delete')
+    expect(axiosInstance.patch).toHaveBeenCalledWith('/admin/reports/9', { action: 'delete' })
   })
 })

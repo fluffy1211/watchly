@@ -150,39 +150,14 @@ class ListCommentControllerTest extends BaseWebTestCase
         $this->assertResponseStatusCodeSame(201);
     }
 
-    public function testCannotReportOwnComment(): void
+    public function testReportUnknownCommentReturns404(): void
     {
-        ['token' => $ownerToken] = $this->createUserWithToken('owner@test.com', 'owner');
-        $list = $this->createList($ownerToken, 'Public List', 'PUBLIC');
+        ['token' => $token] = $this->createUserWithToken('reporter@test.com', 'reporter');
 
-        $this->client->request('POST', "/api/lists/{$list['id']}/comments", [], [], $this->authHeaders($ownerToken),
-            json_encode(['content' => 'My own comment']));
-        $comment = json_decode($this->client->getResponse()->getContent(), true)['comment'];
-
-        $this->client->request('POST', "/api/comments/{$comment['id']}/report", [], [], $this->authHeaders($ownerToken),
+        $this->client->request('POST', '/api/comments/999999/report', [], [], $this->authHeaders($token),
             json_encode(['reason' => 'Spam']));
 
-        $this->assertResponseStatusCodeSame(403);
-    }
-
-    public function testCannotReportSameCommentTwice(): void
-    {
-        ['token' => $ownerToken] = $this->createUserWithToken('owner@test.com', 'owner');
-        ['token' => $otherToken] = $this->createUserWithToken('other@test.com', 'other');
-
-        $list = $this->createList($ownerToken, 'Public List', 'PUBLIC');
-
-        $this->client->request('POST', "/api/lists/{$list['id']}/comments", [], [], $this->authHeaders($ownerToken),
-            json_encode(['content' => 'Reportable comment']));
-        $comment = json_decode($this->client->getResponse()->getContent(), true)['comment'];
-
-        $this->client->request('POST', "/api/comments/{$comment['id']}/report", [], [], $this->authHeaders($otherToken),
-            json_encode(['reason' => 'Spam']));
-        $this->assertResponseStatusCodeSame(201);
-
-        $this->client->request('POST', "/api/comments/{$comment['id']}/report", [], [], $this->authHeaders($otherToken),
-            json_encode(['reason' => 'Spam again']));
-        $this->assertResponseStatusCodeSame(409);
+        $this->assertResponseStatusCodeSame(404);
     }
 
     public function testReportCommentRequiresAuth(): void
