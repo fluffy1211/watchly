@@ -140,7 +140,6 @@
   font-size: var(--watchly-text-sm);
   color: var(--watchly-color-text);
   font-family: var(--watchly-font-body);
-  resize: vertical;
   min-height: 72px;
   transition: border-color var(--watchly-transition);
 }

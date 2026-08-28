@@ -361,7 +361,6 @@
   color: var(--watchly-color-text);
   font-size: var(--watchly-text-sm);
   line-height: 1.6;
-  resize: vertical;
   box-sizing: border-box;
 }
 

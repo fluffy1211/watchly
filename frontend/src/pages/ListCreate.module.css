@@ -42,10 +42,6 @@
   transition: border-color var(--watchly-transition);
 }
 
-.textarea {
-  resize: vertical;
-}
-
 .input:focus,
 .textarea:focus {
   outline: none;
